@@ -1,0 +1,151 @@
+'use client'
+import Image from 'next/image'
+import Link from 'next/link'
+import { MessageCircle, Phone, MapPin, Star, Crown, CheckCircle } from 'lucide-react'
+import { Vendor } from '@/lib/types'
+import { buildWhatsAppUrl, buildPhoneUrl, formatCurrency } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { WhatsAppCTA } from './WhatsAppCTA'
+
+interface VendorCardProps {
+  vendor: Vendor
+  shrink?: boolean
+}
+
+export function VendorCard({ vendor, shrink }: VendorCardProps) {
+  const coverImage = vendor.media?.find((m) => (m.type as string) === 'image' || (m.type as string) === 'thumb')?.url || vendor.media?.[0]?.url
+  const rating = vendor.ratings?.[0]
+  const avgRating = rating
+    ? ((rating.quality_score + rating.cleanliness_score + rating.trust_score) / 3).toFixed(1)
+    : null
+
+  // Calculate minimum price
+  const prices: number[] = []
+  if (vendor.products && vendor.products.length > 0) {
+    vendor.products.forEach(p => prices.push(p.price))
+  }
+  if (vendor.services && vendor.services.length > 0) {
+    vendor.services.forEach(s => s.price && prices.push(s.price))
+  }
+  const minPrice = prices.length > 0 ? Math.min(...prices) : null
+
+  return (
+    <div className={`vendor-card bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col h-full border border-gray-100 ${shrink ? '' : ''}`}>
+      {/* Cover Image */}
+      <Link href={`/vendor/${vendor.id}`} className={`block relative bg-gradient-to-br from-purple-100 to-purple-50 overflow-hidden shrink-0 ${shrink ? 'aspect-[4/3]' : 'aspect-[16/9]'}`}>
+        {coverImage ? (
+          <Image
+            src={coverImage}
+            alt={vendor.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <span className="text-5xl">{vendor.categories?.icon || '🏪'}</span>
+          </div>
+        )}
+        {/* Featured badge */}
+        {vendor.is_featured && (
+          <div className="absolute top-2 left-2">
+            <span className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold px-2.5 py-1 rounded-full featured-pulse shadow-sm">
+              <Crown size={10} />
+              Unggulan
+            </span>
+          </div>
+        )}
+        {/* Category badge */}
+        <div className="absolute top-2 right-2">
+          <span className="bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
+            {vendor.categories?.name || 'Bisnis'}
+          </span>
+        </div>
+      </Link>
+
+      {/* Content */}
+      <div className={`${shrink ? 'p-2.5' : 'p-4'} flex flex-col flex-1`}>
+        <Link href={`/vendor/${vendor.id}`}>
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <h3 className={`font-bold text-gray-900 leading-tight line-clamp-1 ${shrink ? 'text-sm' : 'text-base'}`}>{vendor.name}</h3>
+            {avgRating && (
+              <div className="flex items-center gap-1 shrink-0">
+                <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                <span className="text-xs font-bold text-gray-700">{avgRating}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-1 mt-0.5 mb-1.5">
+            <CheckCircle size={shrink ? 10 : 12} className="text-green-500 shrink-0" />
+            <span className={`${shrink ? 'text-[9px]' : 'text-xs'} text-gray-500 line-clamp-1`}>
+              Terverifikasi · {vendor.owner_name}
+            </span>
+          </div>
+          
+          <p className={`${shrink ? 'text-[10px] line-clamp-1 mb-2' : 'text-xs line-clamp-2 mb-3'} text-gray-400 leading-relaxed`}>
+            {vendor.description}
+          </p>
+          
+          {minPrice !== null && (
+            <div className={`${shrink ? 'mb-2' : 'mb-3'}`}>
+              <span className={`${shrink ? 'text-[8px]' : 'text-[10px]'} text-gray-400 font-medium block leading-none mb-0.5 uppercase tracking-tighter`}>Mulai dari</span>
+              <p className={`${shrink ? 'text-xs' : 'text-sm'} font-black text-purple-600 leading-none`}>{formatCurrency(minPrice)}</p>
+            </div>
+          )}
+          
+          {vendor.maps_link && (
+            <div className={`flex items-center gap-1 text-gray-400 ${shrink ? 'mb-2' : 'mb-3'}`}>
+              <MapPin size={shrink ? 9 : 11} className="text-purple-400" />
+              <span className={`${shrink ? 'text-[9px]' : 'text-xs'} line-clamp-1`}>Dompu, NTB</span>
+            </div>
+          )}
+        </Link>
+
+        {/* CTA Buttons */}
+        <div className={`flex gap-1 mt-auto ${shrink ? 'pt-1' : 'pt-2'}`}>
+          <WhatsAppCTA 
+            phone={vendor.phone} 
+            vendorName={vendor.name} 
+            isTransport={vendor.categories?.slug === 'transport'}
+            shrink={shrink}
+          />
+          {!shrink && (
+            <>
+              <a
+                href={buildPhoneUrl(vendor.phone)}
+                className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Phone size={15} />
+              </a>
+              {vendor.maps_link && (
+                <a
+                  href={vendor.maps_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MapPin size={15} />
+                </a>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function VendorCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+      <div className="aspect-[16/9] skeleton" />
+      <div className="p-4 space-y-3">
+        <div className="h-5 w-3/4 skeleton rounded-lg" />
+        <div className="h-3 w-1/2 skeleton rounded-lg" />
+        <div className="h-8 w-full skeleton rounded-lg" />
+      </div>
+    </div>
+  )
+}

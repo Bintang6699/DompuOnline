@@ -1,0 +1,26 @@
+{
+  "name": "DompuOnline",
+  "short_name": "DompuOnline",
+  "description": "Platform digital lokal Dompu, NTB. Dompu Go Digital.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6C3EFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "shopping", "lifestyle"],
+  "lang": "id-ID"
+}

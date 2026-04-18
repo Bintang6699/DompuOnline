@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 256 100% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 256 80% 95%;
+    --accent-foreground: 256 100% 40%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 256 100% 62%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background-color: #f8faff;
+    color: #1a1a2e;
+    font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #6C3EFF;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5530cc;
+}
+
+/* Gradient utilities */
+.gradient-primary {
+  background: linear-gradient(135deg, #6C3EFF 0%, #3E8BFF 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #1e0b4a 0%, #3b1d96 100%);
+}
+
+.gradient-blue-purple {
+  background: linear-gradient(135deg, #6C3EFF 0%, #3e9bff 100%);
+}
+
+/* Price Styling - Professional */
+.price-tag {
+  color: #6C3EFF;
+  font-weight: 800;
+  font-family: var(--font-poppins);
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Category icon animations */
+.category-icon {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.category-icon:hover {
+  transform: translateY(-5px);
+}
+
+/* Card hover */
+.vendor-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(108, 62, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(108, 62, 255, 0.05);
+}
+.vendor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(108, 62, 255, 0.15);
+  border-color: rgba(108, 62, 255, 0.1);
+}
+
+/* CTA Button */
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.25);
+}
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6C3EFF 0%, #3E8BFF 100%);
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(108, 62, 255, 0.25);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(108, 62, 255, 0.35);
+}
+
+/* Pulse animation for featured badge */
+@keyframes pulse-purple {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 62, 255, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(108, 62, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 62, 255, 0); }
+}
+.featured-pulse {
+  animation: pulse-purple 2s infinite;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.05);
+}
+
+/* Form steps */
+.step-indicator {
+  transition: all 0.4s ease;
+}
+.step-indicator.active {
+  background: linear-gradient(135deg, #6C3EFF, #3E8BFF);
+}
+.step-indicator.completed {
+  background: #10b981;
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Admin sidebar */
+.admin-sidebar {
+  background: linear-gradient(180deg, #1e0b4a 0%, #3b1d96 100%);
+}
+
+/* Status badges */
+.badge-pending { background: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
+.badge-surveyed { background: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+.badge-approved { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+.badge-rejected { background: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
+.badge-active { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+.badge-expired { background: #f9fafb; color: #374151; border: 1px solid #f3f4f6; }
+
+/* Poppins specific weight settings */
+.font-black { font-weight: 900; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .vendor-card:hover {
+    transform: none;
+  }
+  .category-icon:hover {
+    transform: none;
+  }
+}
+
+/* Safe area support for mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

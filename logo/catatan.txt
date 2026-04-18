@@ -1,0 +1,30 @@
+1 harga perbulan 
+    Rp. 9.900
+2 harga 3 bulan 
+    Rp. 30.000
+3 harga 6 bulan 
+    Rp. 179.000
+4 harga 1 tahun 
+    Rp. 499.000
+mitra akan otomatis hilang di branda atau di page user karena masa telah habis di dashboard admin akan ada petujuk bahwa sebentar lagi masa aktifnya akan selesai untuk memperingati mitra agar membayar masa aktif lagi agar bisa muncul di dashboard user lagi berikan kata kata peringatan atau saran kepada user yang ingin mendaftar tolong ganti harga paketan pada pendaftaran tanggal dan waktu tanggal tempat harus menggikuti waktu dompu NTB DAN akan mengikuti waktu pada perangkat yang user pakai 
+bagian dasboard admin harus menyesuikan dengan paket apa yang di pilih pendaftar mitra agar tidak salah sangka atau miskom 
+
+
+
+
+
+data pendaftar yang masuk dan bisa di lihat oleh admin tidak hanya informasi dasar melainkan sertai dengan data harganya produknya dan gambar gambar dan thumnel dan itu semunya bisa di edit kembali untuk mengentisipasi kesalahn data mitra yang mendaftar 
+
+
+
+
+pada bagian bernda ada button yang bertuliskan "jelajahi" di ganti dengan kata "panduan pendafataran" mitra visi misi pokonya about gitu lah kami mendirikan ini untuk membuat dompu maju go digital agar bisa berjualan dengan carah yang digital dan pada bagian ini hilangkan tulisan cina tersebut dan ketika user meng clik button tersebut maka akan di arahkan ke page khusus untuk panduan penggunaan aplikasi pendaftaran dengan penjelasan yang panjang komplek rapih dan mudah di pahami oleh userdan beritahu juga gambar tidak boleh senonoh atau tidak sopan 
+
+
+
+menu nav kategori yang ada pada page user tolong di hapus dan di gantikan menjadi card card mitra seperti toko online shopee yang cardnya tidak besar besar banget kecil kecil bisa di swep ke samping bisa di scrol ke bawa bisa lihat detail pokonya bagusin contohnya kayak aplikasi shoppe gituu jangan di hapus bagian kategori yang ada pada bagian branda use dan ada bagian kategori kategorinya pokonya kayak yang di shopee
+
+
+
+
+
