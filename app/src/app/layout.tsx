@@ -11,31 +11,31 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: 'DompuOnline – Dompu Go Digital',
-    template: '%s | DompuOnline',
+    default: 'Dompu Online - Dompu Digital & Jualan Online Dompu',
+    template: '%s | Dompu Online',
   },
   description:
-    'Platform digital lokal Dompu, NTB. Temukan bisnis, kuliner, jasa, transportasi, dan lowongan kerja terpercaya di Dompu.',
-  keywords: ['Dompu', 'NTB', 'marketplace', 'UMKM', 'kuliner dompu', 'jasa dompu', 'bisnis dompu'],
+    'Dompu Online adalah platform dompu digital terpercaya. Pusat jualan online dompu, UMKM, kuliner, jasa, dan lowongan kerja terlengkap di Kabupaten Dompu, NTB.',
+  keywords: ['Dompu', 'NTB', 'dompu online', 'jualan online dompu', 'dompu digital', 'marketplace dompu', 'UMKM dompu', 'kuliner dompu', 'jasa dompu', 'bisnis dompu', 'loker dompu', 'berita dompu'],
   authors: [{ name: 'DompuOnline' }],
   creator: 'DompuOnline',
   openGraph: {
     type: 'website',
     locale: 'id_ID',
     url: 'https://dompuonline.id',
-    title: 'DompuOnline – Dompu Go Digital',
-    description: 'Platform digital lokal Dompu, NTB',
-    siteName: 'DompuOnline',
+    title: 'Dompu Online - Dompu Digital & Jualan Online Dompu',
+    description: 'Dompu Online adalah platform dompu digital terpercaya. Pusat jualan online dompu, UMKM, kuliner, jasa, dan lowongan kerja.',
+    siteName: 'Dompu Online',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DompuOnline – Dompu Go Digital',
-    description: 'Platform digital lokal Dompu, NTB',
+    title: 'Dompu Online - Dompu Digital & Jualan Online Dompu',
+    description: 'Dompu Online adalah platform dompu digital terpercaya.',
   },
   manifest: '/manifest.json',
   icons: {
-    icon: '/logo/logo.png',
-    apple: '/logo/logo.png',
+    icon: '/logo/logo2.png',
+    apple: '/logo/logo2.png',
   },
 }
 
@@ -46,6 +46,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
 }
 
+import { PwaFeatures } from '@/components/pwa/PwaFeatures'
+
 export default function RootLayout({
   children,
 }: {
@@ -53,7 +55,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={poppins.variable}>
-      <body className={`${poppins.className} antialiased`}>{children}</body>
+      <body className={`${poppins.className} antialiased`}>
+        <PwaFeatures />
+        {children}
+      </body>
     </html>
   )
 }

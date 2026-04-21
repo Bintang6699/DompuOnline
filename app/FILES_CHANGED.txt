@@ -1,0 +1,247 @@
+# 📋 QUICK REFERENCE - FILES YANG BERUBAH
+
+## ✅ FILES YANG SUDAH DIPERBAIKI
+
+### 1. DATABASE SCHEMA
+```
+📁 app/supabase/schema.sql
+   Status: ✅ UPDATED
+   
+   Perubahan:
+   ├─ Jobs table: tambah 5 field baru
+   │  ├─ company_name TEXT
+   │  ├─ contact_info TEXT
+   │  ├─ location TEXT (default: 'Dompu, NTB')
+   │  ├─ type TEXT (default: 'Full-time')
+   │  └─ updated_at TIMESTAMPTZ
+   │
+   ├─ Jobs table: vendor_id jadi NULLABLE
+   │  └─ ALTER COLUMN vendor_id DROP NOT NULL
+   │
+   ├─ Jobs table: AUTO-UPDATE trigger
+   │  └─ CREATE TRIGGER jobs_updated_at
+   │
+   └─ NEW TABLE: media_jobs
+      ├─ job_id UUID FK → jobs(id) ON DELETE CASCADE
+      ├─ type TEXT ('image' | 'video')
+      ├─ url TEXT
+      └─ INDEX idx_media_jobs_job
+```
+
+### 2. MIGRATION FILE (Reference)
+```
+📁 app/supabase/migrations/001_fix_jobs_schema.sql
+   Status: ✅ CREATED
+   
+   Kegunaan: 
+   - Copy-paste ke Supabase SQL Editor
+   - Jalankan untuk apply schema changes
+   - Contains all ALTER & CREATE statements
+```
+
+### 3. ADMIN JOBS PAGE
+```
+📁 app/src/app/admin/jobs/page.tsx
+   Status: ✅ COMPLETELY REWRITTEN
+   
+   Key Changes:
+   ├─ fetchJobs()
+   │  ├─ Query dari jobs table
+   │  ├─ Fetch media dari media_jobs per-job
+   │  └─ Better error handling
+   │
+   ├─ handleSave()
+   │  ├─ Create: Insert ke jobs, then media_jobs
+   │  ├─ Update: Update jobs, delete old media, insert new
+   │  ├─ Validation: Check judul & perusahaan
+   │  └─ Try/catch dengan user alerts
+   │
+   ├─ handleDelete()
+   │  ├─ Delete media_jobs dulu (explicit)
+   │  ├─ Then delete jobs (cascade fallback)
+   │  ├─ Refresh data otomatis
+   │  └─ User alert: success/error
+   │
+   ├─ Form Fields (sama):
+   │  ├─ title, company_name, description
+   │  ├─ requirements, contact_info
+   │  ├─ salary_min, salary_max
+   │  ├─ location, type
+   │  └─ media (banyak)
+   │
+   └─ Enhanced UI:
+      ├─ Loading skeleton 3x
+      ├─ Empty state dengan icon
+      ├─ Refresh button dengan spinner
+      └─ Success/error notifications
+```
+
+### 4. USER JOBS PAGE
+```
+📁 app/src/app/jobs/page.tsx
+   Status: ✅ UPDATED
+   
+   Key Changes:
+   ├─ getJobs()
+   │  ├─ Query HANYA dari jobs table
+   │  ├─ Tidak perlu vendors join
+   │  ├─ Tidak perlu media join (di admin aja)
+   │  └─ Faster query!
+   │
+   ├─ Display
+   │  ├─ Use job.company_name langsung
+   │  └─ Remove job.vendors.name reference
+   │
+   └─ force-dynamic: TETAP
+      └─ Ensure fresh data tanpa cache
+```
+
+---
+
+## 📚 DOCUMENTATION FILES (Baru)
+
+### 5. BUG FIX DOCUMENTATION
+```
+📁 app/BUGFIX_LOKER.md
+   Status: ✅ CREATED
+   
+   Content:
+   ├─ Bug yang diperbaiki (3 bugs)
+   ├─ Step-by-step implementation
+   ├─ Manual testing instructions
+   ├─ Verification checklist
+   ├─ Technical notes
+   └─ Troubleshooting guide
+```
+
+### 6. COMPLETE SUMMARY
+```
+📁 app/PERBAIKAN_LOKER_SUMMARY.md
+   Status: ✅ CREATED
+   
+   Content:
+   ├─ Problem analysis untuk setiap bug
+   ├─ Root cause explanation
+   ├─ Solution detail
+   ├─ Database structure before/after
+   ├─ Testing checklist
+   ├─ Setup instructions
+   ├─ Before vs After table
+   ├─ FAQ & Troubleshooting
+   └─ Deployment notes
+```
+
+### 7. TESTING SCRIPT
+```
+📁 app/TEST_LOKER_FIX.bat
+   Status: ✅ CREATED
+   
+   Usage: 
+   - Double-click untuk jalankan di CMD
+   - Guided testing dengan step-by-step instructions
+   - Test cases untuk: CREATE, EDIT, DELETE
+   - Debugging tips included
+```
+
+---
+
+## 🎯 WHAT TO DO NOW
+
+### IMMEDIATELY (Sebelum test):
+```
+1. ☐ Buka app/supabase/migrations/001_fix_jobs_schema.sql
+2. ☐ Copy isi file
+3. ☐ Buka Supabase Dashboard → SQL Editor
+4. ☐ Paste SQL
+5. ☐ CLICK RUN (tunggu completion)
+6. ☐ Verify tabel media_jobs sudah ada: SELECT * FROM media_jobs;
+```
+
+### TESTING (Testing setup):
+```
+1. ☐ Buka CMD di folder proyek
+2. ☐ Double-click: app/TEST_LOKER_FIX.bat
+3. ☐ Follow step-by-step instructions
+4. ☐ Test CREATE, EDIT, DELETE
+5. ☐ Check bahwa data refresh otomatis
+```
+
+### VERIFICATION (Confirm fix):
+```
+✓ Loker muncul di /jobs tanpa refresh
+✓ Admin bisa create loker with all fields
+✓ Admin bisa edit loker
+✓ Admin bisa delete loker (data hilang everywhere)
+✓ Media tersimpan & terhapus dengan benar
+✓ Contact info tersimpan (new!)
+✓ Salary format currency (working)
+```
+
+---
+
+## 🔑 KEY TECHNICAL CHANGES
+
+### Schema Level:
+- Jobs table: +5 fields (company_name, contact_info, location, type, updated_at)
+- Jobs table: vendor_id jadi optional (NULL)
+- Jobs table: +1 auto-update trigger
+- NEW: media_jobs table (for job media, not vendor media)
+
+### Code Level (Admin):
+- fetchJobs: Media dari media_jobs bukan media table
+- handleSave: Insert ke media_jobs dengan job_id
+- handleDelete: Explicit delete cascade
+- Error handling: Try/catch semua operations
+
+### Code Level (User):
+- getJobs: Simple query tanpa joins
+- Display: company_name langsung, bukan vendor relation
+- force-dynamic: Enabled untuk fresh data
+
+### Data Flow:
+```
+BEFORE:
+Admin Form → Jobs Insert (fail) → No data in DB → User page empty
+
+AFTER:
+Admin Form → Jobs Insert (success) 
+         → Media Insert to media_jobs (success)
+         → Auto-refresh state list
+         → User page query jobs table
+         → Data appears otomatis (force-dynamic)
+```
+
+---
+
+## ⚠️ CRITICAL NOTES
+
+1. **MUST RUN SQL MIGRATION** - Schema won't update without it!
+2. **vendor_id now optional** - Old data remains valid
+3. **Force-dynamic enabled** - Slight performance cost but ensures freshness
+4. **Cascade delete active** - Media auto-delete saat job dihapus
+5. **Backward compatible** - Old loker data still works
+
+---
+
+## 📖 READING ORDER (Recommended)
+
+Jika mau understand full context:
+
+1. `PERBAIKAN_LOKER_SUMMARY.md` ← Start here (complete overview)
+2. `BUGFIX_LOKER.md` ← Implementation steps
+3. `TEST_LOKER_FIX.bat` ← Run actual tests
+4. Source code files (admin/jobs, app/jobs) ← Detailed code review
+
+---
+
+## ✨ STATUS: READY FOR DEPLOYMENT
+
+- ✅ Schema designed
+- ✅ Migration script ready
+- ✅ Admin page fixed
+- ✅ User page fixed
+- ✅ Documentation complete
+- ✅ Testing guide provided
+- ⏳ Waiting for: SQL migration execution + testing
+
+**Next Step:** Run migration SQL + follow TEST_LOKER_FIX.bat guide!
