@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -48,6 +48,8 @@ const formatInputCurrency = (value: string) => {
   return new Intl.NumberFormat('id-ID').format(parseInt(digits))
 }
 
+import { getSettings } from '@/app/actions/settings'
+
 export default function DaftarPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
@@ -63,6 +65,11 @@ export default function DaftarPage() {
   const [menus, setMenus] = useState([{ name: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [productsList, setProductsList] = useState([{ name: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [servicesList, setServicesList] = useState([{ title: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
+  const [enableFreeTrial, setEnableFreeTrial] = useState(false)
+
+  useEffect(() => {
+    getSettings().then(res => setEnableFreeTrial(!!res.enableFreeTrial)).catch(console.error)
+  }, [])
 
   const [formData, setFormData] = useState<VendorFormData>({
     name: '',
@@ -850,7 +857,13 @@ export default function DaftarPage() {
               <p className="text-sm text-gray-500 mb-5">Pilih durasi berlangganan yang sesuai anggaranmu</p>
 
               <div className="space-y-3">
-                {SUBSCRIPTION_PLANS.map(({ plan, popular, badge }) => {
+                {[
+                  ...(enableFreeTrial ? [{ plan: 'free_2_month' as SubscriptionPlan, popular: true, badge: 'Promo Spesial' }] : []),
+                  { plan: '1_month' as SubscriptionPlan, popular: false, badge: '' },
+                  { plan: '3_month' as SubscriptionPlan, popular: !enableFreeTrial, badge: !enableFreeTrial ? 'Terpopuler' : '' },
+                  { plan: '6_month' as SubscriptionPlan, popular: false, badge: 'Hemat 25%' },
+                  { plan: '1_year' as SubscriptionPlan, popular: false, badge: 'Hemat 35%' },
+                ].map(({ plan, popular, badge }) => {
                   const price = getSubscriptionPrice(plan)
                   const isSelected = formData.plan === plan
                   return (

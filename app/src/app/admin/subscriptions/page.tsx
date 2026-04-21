@@ -2,7 +2,8 @@
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { useEffect, useState } from 'react'
 import { formatDate, getSubscriptionLabel, getSubscriptionPrice, formatCurrency } from '@/lib/utils'
-import { CreditCard, RefreshCw, TrendingUp, AlertTriangle, Clock } from 'lucide-react'
+import { getSettings, updateSettings } from '@/app/actions/settings'
+import { CreditCard, RefreshCw, TrendingUp, AlertTriangle, Clock, Gift } from 'lucide-react'
 
 function CountdownTimer({ endDate }: { endDate: string }) {
   const [timeLeft, setTimeLeft] = useState('')
@@ -47,6 +48,10 @@ export default function AdminSubscriptionsPage() {
   const [stats, setStats] = useState({ total: 0, active: 0, revenue: 0 })
   const [activeTab, setActiveTab] = useState<'active' | 'expiring' | 'inactive'>('active')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  
+  // Settings for Free Trial
+  const [settingsData, setSettingsData] = useState<any>(null)
+  const [isUpdatingSettings, setIsUpdatingSettings] = useState(false)
 
   const getRemainingDays = (endDate?: string) => {
     if (!endDate) return -999
@@ -57,6 +62,10 @@ export default function AdminSubscriptionsPage() {
   const fetchData = async () => {
     setLoading(true)
     try {
+      // Load Settings
+      const sData = await getSettings()
+      setSettingsData(sData)
+
       const res = await fetch('/api/admin/subscriptions', { cache: 'no-store' })
       const json = await res.json()
       const subs = json.subscriptions || []
@@ -92,9 +101,24 @@ export default function AdminSubscriptionsPage() {
 
   useEffect(() => { fetchData() }, [])
 
+  const handleToggleFreeTrial = async () => {
+    if (!settingsData || isUpdatingSettings) return
+    setIsUpdatingSettings(true)
+    
+    const newSettings = { ...settingsData, enableFreeTrial: !settingsData.enableFreeTrial }
+    const res = await updateSettings(newSettings)
+    
+    if (res.success) {
+      setSettingsData(newSettings)
+    } else {
+      alert('Gagal mengupdate pengaturan free trial!')
+    }
+    setIsUpdatingSettings(false)
+  }
+
   const handleUpdateSubscription = async (sub: any, newPlan: string) => {
     setActionLoading(sub.id)
-    const months: Record<string, number> = { '1_month': 1, '3_month': 3, '6_month': 6, '1_year': 12 }
+    const months: Record<string, number> = { 'free_2_month': 2, '1_month': 1, '3_month': 3, '6_month': 6, '1_year': 12 }
     const now = new Date()
     const currentEnd = sub.end_date ? new Date(sub.end_date) : now
     const baseDate = currentEnd > now ? currentEnd : now
@@ -102,7 +126,7 @@ export default function AdminSubscriptionsPage() {
     const newEnd = new Date(baseDate)
     newEnd.setMonth(newEnd.getMonth() + (months[newPlan] || 1))
 
-    const amount = getSubscriptionPrice(newPlan)
+    const amount = newPlan === 'free_2_month' ? 0 : getSubscriptionPrice(newPlan)
 
     try {
       await fetch('/api/admin/subscriptions', {
@@ -175,6 +199,34 @@ export default function AdminSubscriptionsPage() {
             </div>
             <button onClick={fetchData} className="p-2.5 bg-white rounded-xl border border-gray-200 text-gray-400 hover:text-purple-600 transition-colors shadow-sm">
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+            </button>
+          </div>
+
+          {/* Toggle Free Trial Card */}
+          <div className="mb-6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-6 shadow-lg shadow-purple-500/20 text-white flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                <Gift size={24} className="text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black tracking-tight">Promo Langganan Gratis 2 Bulan</h2>
+                <p className="text-purple-100 text-sm font-medium">Aktifkan untuk memunculkan paket gratis saat mitra mendaftar.</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleToggleFreeTrial}
+              disabled={isUpdatingSettings || !settingsData}
+              className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 ${
+                settingsData?.enableFreeTrial ? 'bg-green-400' : 'bg-white/20'
+              }`}
+            >
+              <span className="sr-only">Toggle Free Trial</span>
+              <span
+                className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  settingsData?.enableFreeTrial ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
             </button>
           </div>
 

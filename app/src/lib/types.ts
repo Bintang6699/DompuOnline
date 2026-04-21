@@ -1,6 +1,6 @@
 export type VendorStatus = 'pending' | 'surveyed' | 'approved' | 'rejected'
 export type SubscriptionStatus = 'active' | 'expired' | 'pending'
-export type SubscriptionPlan = '1_month' | '3_month' | '6_month' | '1_year'
+export type SubscriptionPlan = 'free_2_month' | '1_month' | '3_month' | '6_month' | '1_year'
 export type MediaType = 'image' | 'video' | 'thumb'
 
 export interface Category {

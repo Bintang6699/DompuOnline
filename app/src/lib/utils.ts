@@ -58,6 +58,7 @@ export function buildPhoneUrl(phone: string): string {
 
 export function getSubscriptionLabel(plan: string): string {
   const labels: Record<string, string> = {
+    'free_2_month': 'Gratis 2 Bulan',
     '1_month': '1 Bulan (30 Hari)',
     '3_month': '3 Bulan (90 Hari)',
     '6_month': '6 Bulan (180 Hari)',
@@ -68,6 +69,7 @@ export function getSubscriptionLabel(plan: string): string {
 
 export function getSubscriptionPrice(plan: string): number {
   const prices: Record<string, number> = {
+    'free_2_month': 0,
     '1_month': 9900,
     '3_month': 30000,
     '6_month': 179000,
