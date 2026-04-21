@@ -28,6 +28,10 @@ export async function updateSettings(data: any) {
   }
 
   try {
+    const dir = path.dirname(settingsPath)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
     fs.writeFileSync(settingsPath, JSON.stringify(data, null, 2))
     return { success: true }
   } catch (err: any) {

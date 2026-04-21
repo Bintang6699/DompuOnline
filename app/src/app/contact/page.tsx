@@ -81,18 +81,18 @@ export default async function ContactPage() {
           )}
 
           {settings.address && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-start gap-4 hover:border-red-300 transition-colors group mt-6">
+            <a href={settings.address.startsWith('http') ? settings.address : `https://${settings.address}`} target="_blank" rel="noopener noreferrer" className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-start gap-4 hover:border-red-300 transition-colors group mt-6 block">
               <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-red-500 transition-colors">
                 <MapPin size={24} className="text-red-500 group-hover:text-white transition-colors" />
               </div>
               <div className="flex-1">
-                <h3 className="font-black text-gray-900">Alamat Kantor Fisik</h3>
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed">{settings.address}</p>
-                <div className="mt-3 inline-block bg-red-50 text-red-600 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wide">
-                  Pembayaran Berlangganan / Konsultasi
+                <h3 className="font-black text-gray-900">Link Alamat (Maps)</h3>
+                <p className="text-sm text-gray-600 mt-1 leading-relaxed line-clamp-2">{settings.address}</p>
+                <div className="mt-3 inline-flex items-center gap-1 bg-red-50 text-red-600 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wide">
+                  Buka Maps
                 </div>
               </div>
-            </div>
+            </a>
           )}
         </div>
       </main>

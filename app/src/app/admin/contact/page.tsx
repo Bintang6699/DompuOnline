@@ -109,15 +109,15 @@ export default function AdminContactPage() {
 
                 <div>
                   <label className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-1">
-                    <MapPin size={16} className="text-red-500" /> Alamat Kantor Fisik
+                    <MapPin size={16} className="text-red-500" /> Link Alamat (Maps)
                   </label>
-                  <p className="text-xs text-gray-400 mb-2">Ditampilkan jika pengguna ingin membayar langsung / datang ke kantor.</p>
-                  <textarea
-                    rows={3}
+                  <p className="text-xs text-gray-400 mb-2">Masukkan URL Google Maps / tautan lokasi.</p>
+                  <input
+                    type="url"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Alamat lengkap..."
+                    placeholder="https://maps.app.goo.gl/..."
                   />
                 </div>
 

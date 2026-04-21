@@ -9,6 +9,8 @@ import { Search, MapPin, SlidersHorizontal, Tag } from 'lucide-react'
 import { CATEGORIES } from '@/lib/categories'
 import Link from 'next/link'
 
+import { getPublicVendors } from '@/app/actions/vendors'
+
 export default function MitraPage() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
@@ -19,28 +21,8 @@ export default function MitraPage() {
   useEffect(() => {
     async function fetchMitraData() {
       setLoading(true)
-      let query = supabase
-        .from('vendors')
-        .select(`
-          *,
-          categories(name, slug, icon),
-          media(id, type, url),
-          ratings(quality_score, cleanliness_score, trust_score),
-          products(price),
-          services(price)
-        `)
-        .eq('status', 'approved')
-        .gte('subscription_end', new Date().toISOString())
-        .order('is_featured', { ascending: false })
-        .order('created_at', { ascending: false })
-
-      if (activeCategory !== 'semua') {
-        // We need to fetch the category ID first or filter by category relation
-        // An easier way is to fetch all and filter in JS if category list is small, 
-        // or query properly. Let's assume we fetch all active and filter because we also need text search.
-      }
-
-      const { data } = await query
+      
+      const data = await getPublicVendors()
       
       if (data) {
         let filteredInfo = data as Vendor[]
