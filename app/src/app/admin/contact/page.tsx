@@ -31,7 +31,7 @@ export default function AdminContactPage() {
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } else {
-      alert('Gagal menyimpan!')
+      alert('Gagal menyimpan: ' + (res.error || 'Unknown error'))
     }
     setSaving(false)
   }

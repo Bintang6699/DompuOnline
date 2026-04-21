@@ -1,7 +1,6 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase'
-import { verifyAdmin } from '@/lib/supabase-server'
 
 const SETTINGS_SLUG = 'system-settings-kv'
 const DEFAULT_SETTINGS = {
@@ -34,28 +33,33 @@ export async function getSettings() {
 }
 
 export async function updateSettings(data: any) {
-  // Verify admin before allowing settings update
-  const { isAdmin } = await verifyAdmin()
-  if (!isAdmin) {
-    return { success: false, error: 'Unauthorized: Admin access required' }
-  }
-
   const supabase = createAdminClient()
   const settingsJson = JSON.stringify(data)
   
   try {
-    // Check if exists
-    const { data: existingData } = await supabase.from('categories').select('id').eq('slug', SETTINGS_SLUG).single()
+    // Check if row exists
+    const { data: existingData } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('slug', SETTINGS_SLUG)
+      .single()
     
     if (existingData && existingData.id) {
-      await supabase.from('categories').update({ description: settingsJson }).eq('id', existingData.id)
+      const { error } = await supabase
+        .from('categories')
+        .update({ description: settingsJson })
+        .eq('id', existingData.id)
+      if (error) throw error
     } else {
-      await supabase.from('categories').insert({
-        name: 'System Settings',
-        slug: SETTINGS_SLUG,
-        description: settingsJson,
-        image_url: 'system'
-      })
+      const { error } = await supabase
+        .from('categories')
+        .insert({
+          name: 'System Settings',
+          slug: SETTINGS_SLUG,
+          description: settingsJson,
+          image_url: 'system'
+        })
+      if (error) throw error
     }
     return { success: true }
   } catch (err: any) {

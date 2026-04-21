@@ -858,7 +858,7 @@ export default function DaftarPage() {
 
               <div className="space-y-3">
                 {[
-                  ...(enableFreeTrial ? [{ plan: 'free_2_month' as SubscriptionPlan, popular: true, badge: 'Promo Spesial' }] : []),
+                  ...(enableFreeTrial ? [{ plan: 'free_1_month' as SubscriptionPlan, popular: true, badge: 'Promo Spesial' }] : []),
                   { plan: '1_month' as SubscriptionPlan, popular: false, badge: '' },
                   { plan: '3_month' as SubscriptionPlan, popular: !enableFreeTrial, badge: !enableFreeTrial ? 'Terpopuler' : '' },
                   { plan: '6_month' as SubscriptionPlan, popular: false, badge: 'Hemat 25%' },

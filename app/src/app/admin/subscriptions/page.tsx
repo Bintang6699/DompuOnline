@@ -3,7 +3,7 @@ import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { useEffect, useState } from 'react'
 import { formatDate, getSubscriptionLabel, getSubscriptionPrice, formatCurrency } from '@/lib/utils'
 import { getSettings, updateSettings } from '@/app/actions/settings'
-import { CreditCard, RefreshCw, TrendingUp, AlertTriangle, Clock, Gift } from 'lucide-react'
+import { CreditCard, RefreshCw, TrendingUp, Clock, Gift } from 'lucide-react'
 
 function CountdownTimer({ endDate }: { endDate: string }) {
   const [timeLeft, setTimeLeft] = useState('')
@@ -102,16 +102,16 @@ export default function AdminSubscriptionsPage() {
   useEffect(() => { fetchData() }, [])
 
   const handleToggleFreeTrial = async () => {
-    if (!settingsData || isUpdatingSettings) return
     setIsUpdatingSettings(true)
     
-    const newSettings = { ...settingsData, enableFreeTrial: !settingsData.enableFreeTrial }
+    const newValue = !settingsData?.enableFreeTrial
+    const newSettings = { ...(settingsData || {}), enableFreeTrial: newValue }
     const res = await updateSettings(newSettings)
     
     if (res.success) {
       setSettingsData(newSettings)
     } else {
-      alert('Gagal mengupdate pengaturan free trial!')
+      alert('Gagal mengupdate: ' + (res.error || 'Unknown error'))
     }
     setIsUpdatingSettings(false)
   }
