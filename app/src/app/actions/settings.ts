@@ -57,7 +57,7 @@ export async function updateSettings(data: any) {
           name: 'System Settings',
           slug: SETTINGS_SLUG,
           description: settingsJson,
-          image_url: 'system'
+          icon: 'system'
         })
       if (error) throw error
     }
