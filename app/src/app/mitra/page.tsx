@@ -182,7 +182,7 @@ export default function MitraPage() {
                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Search className="text-gray-400" size={24} />
                 </div>
-                <h3 className="font-bold text-gray-900 mb-1">Tidak Ditemukan</h3>
+                <h3 className="font-bold text-gray-900 mb-1">Mitra Tidak Ditemukan</h3>
                 <p className="text-sm text-gray-500">Coba gunakan kata kunci lain</p>
               </div>
             )}

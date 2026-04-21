@@ -3,7 +3,7 @@ import { BottomNav } from '@/components/layout/BottomNav'
 
 export const dynamic = 'force-dynamic'
 import { VendorCard } from '@/components/vendors/VendorCard'
-import { supabase } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase'
 import { Vendor } from '@/lib/types'
 import { Search } from 'lucide-react'
 
@@ -15,10 +15,12 @@ export const metadata = {
   title: 'Cari di DompuOnline',
 }
 
+const adminSupabase = createAdminClient()
+
 async function searchVendors(query: string): Promise<Vendor[]> {
   if (!query.trim()) return []
   try {
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('vendors')
       .select(`
         *,
@@ -64,7 +66,7 @@ export default async function SearchPage({ searchParams }: Props) {
             ) : (
               <div className="text-center py-16 bg-white rounded-2xl border border-dashed">
                 <Search size={40} className="mx-auto text-gray-300 mb-3" />
-                <p className="font-semibold text-gray-700 mb-1">Tidak ada hasil</p>
+                <p className="font-semibold text-gray-700 mb-1">Mitra Tidak Ditemukan</p>
                 <p className="text-sm text-gray-400">Coba kata kunci lain atau jelajahi kategori</p>
               </div>
             )}
