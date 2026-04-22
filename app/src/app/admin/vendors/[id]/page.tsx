@@ -76,7 +76,12 @@ export default function VendorDetailAdminPage() {
         body: JSON.stringify({ status }),
       })
       if (!res.ok) throw new Error('Gagal update status')
-      setVendor((prev: any) => ({ ...prev, status }))
+
+      // Refresh vendor data as approval now triggers subscription activation
+      const vRes = await fetch(`/api/admin/vendors/${id}`, { cache: 'no-store' })
+      const vJson = await vRes.json()
+      setVendor(vJson.vendor)
+
       alert(`Status mitra berhasil diubah menjadi: ${status}`)
     } catch (err: any) {
       alert(`Gagal mengubah status: ${err.message}`)
@@ -255,7 +260,12 @@ export default function VendorDetailAdminPage() {
         }),
       })
       if (!res.ok) throw new Error('Gagal aktifkan langganan')
-      setVendor((prev: any) => ({ ...prev, subscription_status: 'active' }))
+
+      // Refresh vendor data to get new subscription dates
+      const vRes = await fetch(`/api/admin/vendors/${id}`, { cache: 'no-store' })
+      const vJson = await vRes.json()
+      setVendor(vJson.vendor)
+
       alert(`Langganan ${selectedPlan} berhasil diaktifkan!`)
     } catch (err: any) {
       alert(`Gagal mengaktifkan langganan: ${err.message}`)
