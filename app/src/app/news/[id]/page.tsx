@@ -4,8 +4,9 @@ import { createAdminClient } from '@/lib/supabase'
 import { formatDate } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { ArrowLeft, Clock, Share2, Tag } from 'lucide-react'
+import { ArrowLeft, Clock, Tag } from 'lucide-react'
 import Link from 'next/link'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 interface NewsItem {
   id: string
@@ -79,9 +80,12 @@ export default async function NewsDetailPage({ params }: Props) {
                   <p className="text-sm font-black text-gray-800 leading-none">{typedNews.author || 'Admin Dompu'}</p>
                 </div>
              </div>
-             <button className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-400">
-               <Share2 size={18} />
-             </button>
+             <ShareButton
+               title={typedNews.title}
+               text={`Baca berita terbaru: ${typedNews.title} di DompuOnline`}
+               url={`/news/${typedNews.id}`}
+               className="w-10 h-10 bg-gray-50 rounded-full text-gray-400 hover:text-purple-600"
+             />
           </div>
 
           {/* Primary Media */}

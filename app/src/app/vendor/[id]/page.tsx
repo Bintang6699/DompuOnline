@@ -9,10 +9,11 @@ import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   MessageCircle, Phone, MapPin, Star, Crown, CheckCircle, ArrowLeft,
-  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight
+  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from '@/components/vendors/WhatsAppCTA'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 interface CartItem {
   id: string
@@ -163,12 +164,18 @@ export default function VendorDetailPage({ params }: Props) {
           {/* Header Info */}
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <h1 className="text-xl font-black text-gray-900">{vendor.name}</h1>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl font-black text-gray-900 truncate">{vendor.name}</h1>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Pemilik: <span className="font-semibold">{vendor.owner_name}</span>
                 </p>
               </div>
+              <ShareButton
+                title={vendor.name}
+                text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
+                url={`/vendor/${vendor.id}`}
+                className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100"
+              />
               {avgRating && (
                 <div className="flex flex-col items-center bg-yellow-50 rounded-xl p-2.5 min-w-[56px]">
                   <Star size={18} className="text-yellow-400 fill-yellow-400" />
@@ -179,19 +186,53 @@ export default function VendorDetailPage({ params }: Props) {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="outline">{vendor.categories?.name}</Badge>
+              <Badge variant="outline" className="uppercase tracking-wider font-bold">{vendor.categories?.name}</Badge>
               <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 rounded-full px-2.5 py-1 font-semibold">
                 <CheckCircle size={11} />
                 Terverifikasi
               </span>
+              {vendor.is_cod && (
+                <span className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 rounded-full px-2.5 py-1 font-semibold">
+                  <Truck size={11} />
+                  Bisa COD
+                </span>
+              )}
               <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 rounded-full px-2.5 py-1">
                 <Clock size={11} />
                 Aktif · {formatDate(vendor.created_at)}
               </span>
             </div>
 
-            <p className="text-sm text-gray-600 leading-relaxed">{vendor.description}</p>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap mb-4">{vendor.description}</p>
+
+            {vendor.hashtags && vendor.hashtags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-gray-50">
+                {vendor.hashtags.map(tag => (
+                  <span key={tag} className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg border border-purple-100">#{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Location Detail */}
+          {vendor.address_detail && (
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+               <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                 <MapPin size={16} className="text-purple-600" /> Alamat Lengkap
+               </h2>
+               <p className="text-sm text-gray-600 leading-relaxed mb-4">{vendor.address_detail}</p>
+               {vendor.maps_link && (
+                 <a
+                   href={vendor.maps_link}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="w-full bg-blue-50 text-blue-600 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors text-sm"
+                 >
+                   <Navigation size={16} /> LIHAT DI GOOGLE MAPS
+                 </a>
+               )}
+            </div>
+          )}
 
           {/* Rating Detail */}
           {rating && (

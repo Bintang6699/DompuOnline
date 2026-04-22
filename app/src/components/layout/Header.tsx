@@ -3,17 +3,25 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Search, Bell, MapPin } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export function Header() {
   const [query, setQuery] = useState('')
   const router = useRouter()
+  const debouncedQuery = useDebounce(query, 500)
+
+  useEffect(() => {
+    if (debouncedQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(debouncedQuery.trim())}`)
+    }
+  }, [debouncedQuery, router])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`)
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
     }
   }
 

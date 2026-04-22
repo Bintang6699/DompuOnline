@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabase'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Briefcase, DollarSign, Calendar, MessageCircle, Share2, Building2 } from 'lucide-react'
+import { ArrowLeft, MapPin, Briefcase, DollarSign, Calendar, MessageCircle, Building2 } from 'lucide-react'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 interface JobItem {
   id: string
@@ -92,9 +93,12 @@ export default function JobDetailPage({ params }: Props) {
            >
              <ArrowLeft size={20} />
            </button>
-           <button className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-gray-400 shadow-sm border border-gray-100">
-             <Share2 size={18} />
-           </button>
+           <ShareButton
+             title={job.title}
+             text={`Info Loker: ${job.title} di ${job.company_name}. Cek detailnya di DompuOnline!`}
+             url={`/jobs/${job.id}`}
+             className="w-10 h-10 bg-white rounded-2xl text-gray-400 hover:text-purple-600 shadow-sm border border-gray-100"
+           />
         </div>
 
         {/* Hero Card */}
