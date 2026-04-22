@@ -118,15 +118,7 @@ export default function AdminSubscriptionsPage() {
 
   const handleUpdateSubscription = async (sub: any, newPlan: string) => {
     setActionLoading(sub.id)
-    const months: Record<string, number> = { 'free_2_month': 2, '1_month': 1, '3_month': 3, '6_month': 6, '1_year': 12 }
-    const now = new Date()
-    const currentEnd = sub.end_date ? new Date(sub.end_date) : now
-    const baseDate = currentEnd > now ? currentEnd : now
-    
-    const newEnd = new Date(baseDate)
-    newEnd.setMonth(newEnd.getMonth() + (months[newPlan] || 1))
-
-    const amount = newPlan === 'free_2_month' ? 0 : getSubscriptionPrice(newPlan)
+    const amount = newPlan === 'free_2_month' || newPlan === 'free_1_month' ? 0 : getSubscriptionPrice(newPlan)
 
     try {
       await fetch('/api/admin/subscriptions', {
@@ -135,16 +127,9 @@ export default function AdminSubscriptionsPage() {
         body: JSON.stringify({
           id: sub.id,
           vendor_id: sub.vendor_id,
+          plan: newPlan,
           updates: {
-            plan: newPlan,
-            end_date: newEnd.toISOString(),
-            start_date: now.toISOString(),
-            status: 'active',
             amount_paid: amount
-          },
-          vendorUpdates: {
-            subscription_status: 'active',
-            subscription_end: newEnd.toISOString(),
           }
         })
       })

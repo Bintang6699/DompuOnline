@@ -44,43 +44,67 @@ export async function PATCH(request: Request) {
   try {
     const supabase = createAdminClient()
     const body = await request.json()
-    const { id, status, activateSubscription } = body
+    const { id, status, activateSubscription, plan: requestedPlan } = body
 
     if (!id) {
       return NextResponse.json({ error: 'ID diperlukan' }, { status: 400 })
     }
 
-    if (activateSubscription) {
-      // Activate subscription for 1 month
-      const plan = '1_month'
-      const start = new Date()
-      const end = new Date()
-      end.setMonth(end.getMonth() + 1)
+    // Helper function to calculate expiration date (Overwrite logic)
+    const calculateEndDate = (plan: string, fromDate: Date) => {
+      const end = new Date(fromDate)
+      if (plan === 'free_1_month' || plan === '1_month') end.setMonth(end.getMonth() + 1)
+      else if (plan === 'free_2_month') end.setMonth(end.getMonth() + 2)
+      else if (plan === '3_month') end.setMonth(end.getMonth() + 3)
+      else if (plan === '6_month') end.setMonth(end.getMonth() + 6)
+      else if (plan === '1_year') end.setFullYear(end.getFullYear() + 1)
+      else end.setMonth(end.getMonth() + 1)
+      return end
+    }
 
-      const { error: vendorErr } = await supabase
+    // Manual activation or automatic activation upon approval
+    if (activateSubscription || status === 'approved') {
+      // Get existing subscription to know the plan if not provided
+      const { data: subData } = await supabase
+        .from('subscriptions')
+        .select('plan')
+        .eq('vendor_id', id)
+        .maybeSingle()
+
+      const plan = requestedPlan || subData?.plan || '1_month'
+      const now = new Date()
+      const expiryDate = calculateEndDate(plan, now)
+
+      // Update Vendor
+      const { error: vError } = await supabase
         .from('vendors')
         .update({
+          status: status || 'approved',
           subscription_status: 'active',
-          subscription_start: start.toISOString(),
-          subscription_end: end.toISOString(),
+          subscription_start: now.toISOString(),
+          subscription_end: expiryDate.toISOString(),
         })
         .eq('id', id)
 
-      if (vendorErr) throw vendorErr
+      if (vError) throw vError
 
-      const { error: subErr } = await supabase
+      // Update/Upsert Subscription record
+      const { error: sError } = await supabase
         .from('subscriptions')
         .upsert({
           vendor_id: id,
           plan,
           status: 'active',
-          start_date: start.toISOString(),
-          end_date: end.toISOString(),
+          start_date: now.toISOString(),
+          end_date: expiryDate.toISOString(),
         }, { onConflict: 'vendor_id' })
 
-      if (subErr) console.error('Subscription upsert error:', subErr)
+      if (sError) console.error('Subscription update error:', sError)
 
-      return NextResponse.json({ success: true, action: 'subscription_activated' })
+      return NextResponse.json({
+        success: true,
+        action: status === 'approved' ? 'approved_and_activated' : 'activated'
+      })
     }
 
     if (status) {
