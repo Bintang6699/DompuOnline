@@ -12,7 +12,8 @@ import { VendorFormData, SubscriptionPlan } from '@/lib/types'
 import { getSubscriptionPrice, getSubscriptionLabel, formatCurrency } from '@/lib/utils'
 import {
   CheckCircle, Upload, ArrowRight, ArrowLeft, MapPin,
-  Phone, Store, Package, Crown, Sparkles, X, Plus, ShieldAlert, BookOpen, MessageCircle
+  Phone, Store, Package, Crown, Sparkles, X, Plus, ShieldAlert, BookOpen, MessageCircle,
+  Truck
 } from 'lucide-react'
 
 const CATEGORIES = [
@@ -66,6 +67,7 @@ export default function DaftarPage() {
   const [productsList, setProductsList] = useState([{ name: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [servicesList, setServicesList] = useState([{ title: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [enableFreeTrial, setEnableFreeTrial] = useState(false)
+  const [hashtagInput, setHashtagInput] = useState('')
 
   useEffect(() => {
     getSettings().then(res => setEnableFreeTrial(!!res.enableFreeTrial)).catch(console.error)
@@ -80,6 +82,9 @@ export default function DaftarPage() {
     maps_link: '',
     latitude: '',
     longitude: '',
+    address_detail: '',
+    hashtags: [],
+    is_cod: false,
     vehicle_type: '',
     service_area: '',
     job_title: '',
@@ -88,9 +93,24 @@ export default function DaftarPage() {
     plan: '1_month',
   })
 
-  const updateField = (field: keyof VendorFormData, value: string) => {
+  const updateField = (field: keyof VendorFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const handleAddHashtag = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      const tag = hashtagInput.trim().replace(/^#/, '')
+      if (tag && !formData.hashtags?.includes(tag)) {
+        updateField('hashtags', [...(formData.hashtags || []), tag])
+      }
+      setHashtagInput('')
+    }
+  }
+
+  const removeHashtag = (tag: string) => {
+    updateField('hashtags', (formData.hashtags || []).filter(t => t !== tag))
   }
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +179,8 @@ export default function DaftarPage() {
     }
     if (step === 3) {
       if (!thumbnail) newErrors.thumbnail = 'Thumbnail wajib di-upload'
+      if (!formData.address_detail?.trim()) newErrors.address_detail = 'Alamat detail wajib diisi'
+      if ((formData.hashtags || []).length < 4) newErrors.hashtags = 'Minimal berikan 4 hashtag'
     }
     if (step === 4) {
       if (!formData.plan) newErrors.plan = 'Pilih paket berlangganan'
@@ -215,6 +237,9 @@ export default function DaftarPage() {
           maps_link: formData.maps_link || null,
           latitude: formData.latitude ? parseFloat(formData.latitude) : null,
           longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+          address_detail: formData.address_detail || null,
+          hashtags: formData.hashtags || [],
+          is_cod: formData.is_cod || false,
           status: 'pending',
           subscription_status: 'pending',
         })
@@ -844,6 +869,55 @@ export default function DaftarPage() {
                 onChange={(e) => updateField('longitude', e.target.value)}
               />
             </div>
+
+        <Textarea
+          id="address_detail"
+          label="Alamat Detail (Lengkap)"
+          placeholder="Contoh: Jl. Mahoni No. 12, Samping Toko Serba Ada, Kel. Bada"
+          rows={2}
+          value={formData.address_detail}
+          onChange={(e) => updateField('address_detail', e.target.value)}
+          error={errors.address_detail}
+          required
+        />
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700 block mb-2">
+            Hashtag Discovery (Min. 4) <span className="text-red-500">*</span>
+          </label>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {formData.hashtags?.map((tag) => (
+              <span key={tag} className="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-purple-200">
+                #{tag}
+                <button onClick={() => removeHashtag(tag)} className="hover:text-purple-900"><X size={12} /></button>
+              </span>
+            ))}
+          </div>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">#</span>
+            <input
+              value={hashtagInput}
+              onChange={(e) => setHashtagInput(e.target.value)}
+              onKeyDown={handleAddHashtag}
+              placeholder="Ketik tag lalu tekan Enter (Contoh: kuliner, pedas, murah)"
+              className="w-full pl-7 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+          {errors.hashtags && <p className="text-xs text-red-500 mt-1">{errors.hashtags}</p>}
+        </div>
+
+        <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+          <input
+            type="checkbox"
+            id="is_cod"
+            checked={formData.is_cod}
+            onChange={(e) => updateField('is_cod', e.target.checked)}
+            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          />
+          <label htmlFor="is_cod" className="text-sm font-bold text-gray-700 cursor-pointer flex items-center gap-2">
+            <Truck size={16} className="text-gray-400" /> Bisa COD (Bayar di Tempat)
+          </label>
+        </div>
           </div>
         )}
 

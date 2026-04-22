@@ -31,7 +31,7 @@ async function searchVendors(query: string): Promise<Vendor[]> {
       .eq('status', 'approved')
       .eq('subscription_status', 'active')
       .gte('subscription_end', new Date().toISOString())
-      .or(`name.ilike.%${query}%,description.ilike.%${query}%,owner_name.ilike.%${query}%`)
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%,owner_name.ilike.%${query}%,hashtags.cs.{${query}}`)
       .order('is_featured', { ascending: false })
       .limit(20)
     if (error) throw error

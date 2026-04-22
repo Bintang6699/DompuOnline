@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useParams, useRouter } from 'next/navigation'
 import { formatDate, getSubscriptionPrice, formatCurrency } from '@/lib/utils'
-import { ArrowLeft, CheckCircle, XCircle, Clock, Star, CreditCard, MapPin, Phone, MessageCircle, Flag, Trash2, Edit2, Save, Upload, Package } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle, Clock, Star, CreditCard, MapPin, Phone, MessageCircle, Flag, Trash2, Edit2, Save, Upload, Package, X } from 'lucide-react'
 import { MediaUpload } from '@/components/admin/MediaUpload'
 import Link from 'next/link'
 
@@ -14,7 +14,17 @@ export default function VendorDetailAdminPage() {
   const [vendor, setVendor] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ name: '', owner_name: '', phone: '', category_id: '', description: '' })
+  const [editForm, setEditForm] = useState({
+    name: '',
+    owner_name: '',
+    phone: '',
+    category_id: '',
+    description: '',
+    address_detail: '',
+    hashtags: [] as string[],
+    is_cod: false
+  })
+  const [hashtagInput, setHashtagInput] = useState('')
   const [ratingForm, setRatingForm] = useState({ quality_score: 4, cleanliness_score: 4, trust_score: 4, notes: '' })
   const [savingRating, setSavingRating] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState('3_month')
@@ -47,7 +57,10 @@ export default function VendorDetailAdminPage() {
           owner_name: data?.owner_name || '', 
           phone: data?.phone || '',
           category_id: data?.category_id || '',
-          description: data?.description || ''
+          description: data?.description || '',
+          address_detail: data?.address_detail || '',
+          hashtags: data?.hashtags || [],
+          is_cod: data?.is_cod || false
         })
         if (data?.ratings?.[0]) {
           setRatingForm({
@@ -96,6 +109,9 @@ export default function VendorDetailAdminPage() {
         phone: editForm.phone,
         category_id: editForm.category_id,
         description: editForm.description,
+        address_detail: editForm.address_detail,
+        hashtags: editForm.hashtags,
+        is_cod: editForm.is_cod
       }).eq('id', id)
       if (error) throw error
       
@@ -107,6 +123,9 @@ export default function VendorDetailAdminPage() {
         phone: editForm.phone, 
         category_id: editForm.category_id,
         description: editForm.description,
+        address_detail: editForm.address_detail,
+        hashtags: editForm.hashtags,
+        is_cod: editForm.is_cod,
         categories: newCat
       }))
       setIsEditing(false)
@@ -343,6 +362,47 @@ export default function VendorDetailAdminPage() {
                     </select>
                   </div>
                   <div><label className="text-gray-500 block text-xs">Deskripsi</label><textarea className="border w-full p-2 rounded-lg" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} rows={3} /></div>
+                  <div><label className="text-gray-500 block text-xs">Alamat Detail</label><textarea className="border w-full p-2 rounded-lg" value={editForm.address_detail} onChange={e => setEditForm({...editForm, address_detail: e.target.value})} rows={2} /></div>
+
+                  <div>
+                    <label className="text-gray-500 block text-xs mb-1">Hashtags</label>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {editForm.hashtags.map(tag => (
+                        <span key={tag} className="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 border border-purple-100">
+                          #{tag}
+                          <button onClick={() => setEditForm({...editForm, hashtags: editForm.hashtags.filter(t => t !== tag)})}><X size={10} /></button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        className="border flex-1 p-2 rounded-lg text-sm"
+                        placeholder="Tambah tag..."
+                        value={hashtagInput}
+                        onChange={e => setHashtagInput(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            const tag = hashtagInput.trim().replace(/^#/, '')
+                            if (tag && !editForm.hashtags.includes(tag)) {
+                              setEditForm({...editForm, hashtags: [...editForm.hashtags, tag]})
+                            }
+                            setHashtagInput('')
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border">
+                    <input
+                      type="checkbox"
+                      id="edit-is-cod"
+                      checked={editForm.is_cod}
+                      onChange={e => setEditForm({...editForm, is_cod: e.target.checked})}
+                    />
+                    <label htmlFor="edit-is-cod" className="text-xs font-bold text-gray-700 cursor-pointer">Bisa COD</label>
+                  </div>
+
                   <button onClick={handleUpdateInfo} className="btn-primary w-full py-2 rounded-xl text-white font-bold flex items-center justify-center gap-2 mt-2"><Save size={16}/>Simpan Perubahan</button>
                 </div>
               ) : (
@@ -362,7 +422,31 @@ export default function VendorDetailAdminPage() {
                 {vendor.description && (
                   <div className="pt-2 border-t border-gray-50">
                     <p className="text-gray-500 mb-1">Deskripsi</p>
-                    <p className="text-gray-700 text-xs leading-relaxed">{vendor.description}</p>
+                      <p className="text-gray-700 text-xs leading-relaxed whitespace-pre-wrap">{vendor.description}</p>
+                    </div>
+                  )}
+
+                  {vendor.address_detail && (
+                    <div className="pt-2 border-t border-gray-50">
+                      <p className="text-gray-500 mb-1">Alamat Detail</p>
+                      <p className="text-gray-700 text-xs leading-relaxed">{vendor.address_detail}</p>
+                    </div>
+                  )}
+
+                  {vendor.hashtags && vendor.hashtags.length > 0 && (
+                    <div className="pt-2 border-t border-gray-50">
+                      <p className="text-gray-500 mb-1">Hashtags</p>
+                      <div className="flex flex-wrap gap-1">
+                        {vendor.hashtags.map((tag: string) => (
+                          <span key={tag} className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">#{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {vendor.is_cod && (
+                    <div className="pt-2 border-t border-gray-50">
+                      <span className="text-[10px] font-black bg-green-50 text-green-600 border border-green-100 px-2 py-0.5 rounded-full">COD AVAILABLE ✓</span>
                   </div>
                 )}
               </div>

@@ -1,11 +1,12 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MessageCircle, Phone, MapPin, Star, Crown, CheckCircle } from 'lucide-react'
+import { MessageCircle, Phone, MapPin, Star, Crown, CheckCircle, Truck } from 'lucide-react'
 import { Vendor } from '@/lib/types'
 import { buildWhatsAppUrl, buildPhoneUrl, formatCurrency } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from './WhatsAppCTA'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 interface VendorCardProps {
   vendor: Vendor
@@ -56,10 +57,15 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
           </div>
         )}
         {/* Category badge */}
-        <div className="absolute top-2 right-2">
-          <span className="bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
+        <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+          <span className="bg-black/40 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
             {vendor.categories?.name || 'Bisnis'}
           </span>
+          {vendor.is_cod && (
+            <span className="bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black flex items-center gap-1 shadow-sm">
+              <Truck size={10} /> COD
+            </span>
+          )}
         </div>
       </Link>
 
@@ -85,6 +91,14 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
           <p className={`${shrink ? 'text-[10px] line-clamp-1 mb-2' : 'text-xs line-clamp-2 mb-3'} text-gray-400 leading-relaxed`}>
             {vendor.description}
           </p>
+
+          {vendor.hashtags && vendor.hashtags.length > 0 && !shrink && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {vendor.hashtags.slice(0, 3).map(tag => (
+                <span key={tag} className="text-[9px] font-bold text-purple-500 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-100">#{tag}</span>
+              ))}
+            </div>
+          )}
           
           {minPrice !== null && (
             <div className={`${shrink ? 'mb-2' : 'mb-3'}`}>
@@ -115,20 +129,16 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
                 href={buildPhoneUrl(vendor.phone)}
                 className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
+                title="Telepon"
               >
                 <Phone size={15} />
               </a>
-              {vendor.maps_link && (
-                <a
-                  href={vendor.maps_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MapPin size={15} />
-                </a>
-              )}
+              <ShareButton
+                title={vendor.name}
+                text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
+                url={`/vendor/${vendor.id}`}
+                className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
+              />
             </>
           )}
         </div>

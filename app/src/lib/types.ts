@@ -33,6 +33,9 @@ export interface Vendor {
   products?: Product[]
   services?: Service[]
   jobs?: Job[]
+  hashtags?: string[]
+  is_cod?: boolean
+  address_detail?: string
 }
 
 export interface Product {
@@ -118,6 +121,7 @@ export interface VendorFormData {
   maps_link: string
   latitude: string
   longitude: string
+  address_detail?: string
   // Category-specific
   vehicle_type?: string
   transport_plate?: string
@@ -133,6 +137,9 @@ export interface VendorFormData {
   job_requirements?: string
   // Subscription
   plan?: SubscriptionPlan
+  // New features
+  hashtags?: string[]
+  is_cod?: boolean
 }
 
 export interface CommunityLink {
