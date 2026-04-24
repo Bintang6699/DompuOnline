@@ -9,7 +9,7 @@ import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   MessageCircle, Phone, MapPin, Star, Crown, CheckCircle, ArrowLeft,
-  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation
+  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation, Heart
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from '@/components/vendors/WhatsAppCTA'
@@ -35,6 +35,8 @@ export default function VendorDetailPage({ params }: Props) {
   const [showCart, setShowCart] = useState(false)
   const [buyerName, setBuyerName] = useState('')
   const [id, setId] = useState<string | null>(null)
+  const [likes, setLikes] = useState(0)
+  const [isLiked, setIsLiked] = useState(false)
 
   useEffect(() => {
     params.then(p => setId(p.id))
@@ -61,7 +63,14 @@ export default function VendorDetailPage({ params }: Props) {
           .gte('subscription_end', new Date().toISOString())
           .single()
         
-        if (data) setVendor(data as Vendor)
+        if (data) {
+          setVendor(data as Vendor)
+          setLikes(data.likes_count || 0)
+          const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+          if (likedVendors.includes(data.id)) {
+            setIsLiked(true)
+          }
+        }
       } catch (err) {
         console.error(err)
       } finally {
@@ -110,6 +119,22 @@ export default function VendorDetailPage({ params }: Props) {
     msg += `Mohon segera dikonfirmasi ya, terima kasih! 🙏`
 
     return `https://wa.me/${vendor.phone.replace(/\D/g, '').replace(/^0/, '62')}?text=${encodeURIComponent(msg)}`
+  }
+
+  const handleLike = async () => {
+    if (!vendor || isLiked) return
+    try {
+      const res = await fetch(`/api/vendors/${vendor.id}/like`, { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json()
+        setLikes(data.likes_count)
+        setIsLiked(true)
+        const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+        localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+      }
+    } catch (err) {
+      console.error('Error liking vendor:', err)
+    }
   }
 
   if (loading) return (
@@ -170,12 +195,24 @@ export default function VendorDetailPage({ params }: Props) {
                   Pemilik: <span className="font-semibold">{vendor.owner_name}</span>
                 </p>
               </div>
-              <ShareButton
-                title={vendor.name}
-                text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
-                url={`/vendor/${vendor.id}`}
-                className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100"
-              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleLike}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                    isLiked
+                    ? 'bg-red-500 text-white shadow-lg shadow-red-500/20'
+                    : 'bg-red-50 text-red-500 hover:bg-red-100'
+                  }`}
+                >
+                  <Heart size={20} className={isLiked ? 'fill-current' : ''} />
+                </button>
+                <ShareButton
+                  title={vendor.name}
+                  text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
+                  url={`/vendor/${vendor.id}`}
+                  className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100"
+                />
+              </div>
               {avgRating && (
                 <div className="flex flex-col items-center bg-yellow-50 rounded-xl p-2.5 min-w-[56px]">
                   <Star size={18} className="text-yellow-400 fill-yellow-400" />
@@ -200,6 +237,12 @@ export default function VendorDetailPage({ params }: Props) {
               <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 rounded-full px-2.5 py-1">
                 <Clock size={11} />
                 Aktif · {formatDate(vendor.created_at)}
+              </span>
+              <span className={`flex items-center gap-1 text-xs rounded-full px-2.5 py-1 font-bold ${
+                isLiked ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'
+              }`}>
+                <Heart size={11} className={isLiked ? 'fill-current' : ''} />
+                {likes} Disukai
               </span>
             </div>
 

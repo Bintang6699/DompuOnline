@@ -36,6 +36,7 @@ export interface Vendor {
   hashtags?: string[]
   is_cod?: boolean
   address_detail?: string
+  likes_count?: number
 }
 
 export interface Product {
