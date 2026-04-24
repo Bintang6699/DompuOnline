@@ -1,10 +1,10 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MessageCircle, Phone, MapPin, Star, Crown, CheckCircle, Truck } from 'lucide-react'
+import { Phone, MapPin, Star, Crown, CheckCircle, Truck, Heart } from 'lucide-react'
 import { Vendor } from '@/lib/types'
-import { buildWhatsAppUrl, buildPhoneUrl, formatCurrency } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react'
+import { buildPhoneUrl, formatCurrency } from '@/lib/utils'
 import { WhatsAppCTA } from './WhatsAppCTA'
 import { ShareButton } from '@/components/ui/ShareButton'
 
@@ -14,6 +14,36 @@ interface VendorCardProps {
 }
 
 export function VendorCard({ vendor, shrink }: VendorCardProps) {
+  const [likes, setLikes] = useState(vendor.likes_count || 0)
+  const [isLiked, setIsLiked] = useState(false)
+
+  useEffect(() => {
+    const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+    if (likedVendors.includes(vendor.id)) {
+      setIsLiked(true)
+    }
+  }, [vendor.id])
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (isLiked) return
+
+    try {
+      const res = await fetch(`/api/vendors/${vendor.id}/like`, { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json()
+        setLikes(data.likes_count)
+        setIsLiked(true)
+        const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+        localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+      }
+    } catch (err) {
+      console.error('Error liking vendor:', err)
+    }
+  }
+
   const coverImage = vendor.media?.find((m) => (m.type as string) === 'image' || (m.type as string) === 'thumb')?.url || vendor.media?.[0]?.url
   const rating = vendor.ratings?.[0]
   const avgRating = rating
@@ -56,8 +86,19 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
             </span>
           </div>
         )}
-        {/* Category badge */}
+        {/* Category badge & Likes */}
         <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+          <button
+            onClick={handleLike}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md transition-all ${
+              isLiked
+              ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-105'
+              : 'bg-black/40 text-white hover:bg-black/60'
+            }`}
+          >
+            <Heart size={12} className={isLiked ? 'fill-current' : ''} />
+            <span className="text-[10px] font-black">{likes}</span>
+          </button>
           <span className="bg-black/40 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
             {vendor.categories?.name || 'Bisnis'}
           </span>

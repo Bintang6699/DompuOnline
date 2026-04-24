@@ -103,17 +103,25 @@ export default function VendorDetailAdminPage() {
 
   const handleUpdateInfo = async () => {
     try {
-      const { error } = await supabase.from('vendors').update({
-        name: editForm.name,
-        owner_name: editForm.owner_name,
-        phone: editForm.phone,
-        category_id: editForm.category_id,
-        description: editForm.description,
-        address_detail: editForm.address_detail,
-        hashtags: editForm.hashtags,
-        is_cod: editForm.is_cod
-      }).eq('id', id)
-      if (error) throw error
+      const res = await fetch(`/api/admin/vendors/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editForm.name,
+          owner_name: editForm.owner_name,
+          phone: editForm.phone,
+          category_id: editForm.category_id,
+          description: editForm.description,
+          address_detail: editForm.address_detail,
+          hashtags: editForm.hashtags,
+          is_cod: editForm.is_cod
+        }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Gagal memperbarui informasi')
+      }
       
       const newCat = allCategories.find(c => c.id === editForm.category_id)
       setVendor((prev: any) => ({ 
