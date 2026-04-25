@@ -335,7 +335,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-2xl font-black mb-3 tracking-tight">Go Digital Sekarang!</h3>
               <p className="text-sm text-purple-100/70 mb-8 max-w-[280px] leading-relaxed font-medium">
-                Dapatkan prioritas pencarian dan badge "Terverifikasi" untuk meningkatkan kepercayaan pelanggan.
+                Dapatkan prioritas pencarian dan badge &quot;Terverifikasi&quot; untuk meningkatkan kepercayaan pelanggan.
               </p>
               <Link href="/daftar" className="bg-white text-purple-900 font-black text-xs py-4 px-8 rounded-2xl inline-flex items-center gap-2 hover:bg-purple-50 transition-all active:scale-95">
                 MULAI SEKARANG <ArrowRight size={14} />
