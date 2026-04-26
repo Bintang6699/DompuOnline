@@ -1,8 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Search, Bell, MapPin } from 'lucide-react'
+import { Search, MapPin } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -26,7 +25,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 glass border-b border-white/50 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <div className="max-w-lg mx-auto px-4 py-3">
         {/* Top row */}
         <div className="flex items-center justify-between mb-3">
