@@ -354,10 +354,10 @@ export default function VendorDetailPage({ params }: Props) {
                 {vendor.products.map((p) => {
                   const inCart = cart.find(c => c.id === p.id)
                   return (
-                    <div key={p.id} className="group relative bg-white rounded-[32px] p-5 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                      <div className="flex gap-6">
+                    <div key={p.id} className="group relative bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex gap-4 sm:gap-6">
                         {p.image_url ? (
-                          <div className="shrink-0 w-32 h-32 rounded-[28px] overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
+                          <div className="shrink-0 w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[28px] overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
                             <Image 
                               src={p.image_url} 
                               alt={p.name} 
@@ -367,41 +367,41 @@ export default function VendorDetailPage({ params }: Props) {
                             />
                           </div>
                         ) : (
-                          <div className="shrink-0 w-32 h-32 rounded-[28px] bg-purple-50 flex items-center justify-center text-purple-200 border border-purple-100">
-                            <Package size={48} />
+                          <div className="shrink-0 w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[28px] bg-purple-50 flex items-center justify-center text-purple-200 border border-purple-100">
+                            <Package className="w-8 h-8 sm:w-12 sm:h-12" />
                           </div>
                         )}
                         
-                        <div className="flex-1 flex flex-col justify-between py-1">
+                        <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
                           <div>
-                            <h3 className="font-black text-xl text-gray-900 leading-tight mb-2">{p.name}</h3>
+                            <h3 className="font-black text-lg sm:text-xl text-gray-900 leading-tight mb-1 sm:mb-2">{p.name}</h3>
                             {p.description && (
-                              <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 font-medium italic">
+                              <p className="text-[11px] sm:text-sm text-gray-400 leading-relaxed line-clamp-2 font-medium italic">
                                 {p.description}
                               </p>
                             )}
                           </div>
 
-                          <div className="flex justify-between items-end mt-4">
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Harga Terbaik</span>
-                              <p className="text-xl font-black text-purple-600 whitespace-nowrap leading-none">
+                          <div className="flex flex-row items-end justify-between mt-3 sm:mt-4 gap-2">
+                            <div className="flex flex-col flex-1 min-w-0">
+                              <span className="text-[9px] sm:text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1 sm:mb-1.5 truncate">Harga</span>
+                              <p className="text-[13px] sm:text-xl font-black text-purple-600 truncate leading-none">
                                 {formatCurrency(p.price)}
                               </p>
                             </div>
                             <div className="shrink-0">
                               {inCart ? (
-                                <div className="flex items-center gap-3 bg-gray-50 rounded-full p-2 border border-purple-100 shadow-inner">
-                                  <button onClick={() => removeFromCart(p.id)} className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus size={16} /></button>
-                                  <span className="text-base font-black px-1 min-w-[28px] text-center text-purple-700">{inCart.quantity}</span>
-                                  <button onClick={() => addToCart(p, 'product')} className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={16} /></button>
+                                <div className="flex items-center gap-2 sm:gap-3 bg-gray-50 rounded-full p-1.5 sm:p-2 border border-purple-100 shadow-inner">
+                                  <button onClick={() => removeFromCart(p.id)} className="w-7 h-7 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /></button>
+                                  <span className="text-sm sm:text-base font-black px-1 min-w-[20px] sm:min-w-[28px] text-center text-purple-700">{inCart.quantity}</span>
+                                  <button onClick={() => addToCart(p, 'product')} className="w-7 h-7 sm:w-9 sm:h-9 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /></button>
                                 </div>
                               ) : (
                                 <button 
                                   onClick={() => addToCart(p, 'product')}
-                                  className="bg-purple-600 text-white text-xs font-black px-7 py-3.5 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 hover:shadow-purple-200 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-wider"
+                                  className="bg-purple-600 text-white text-[10px] sm:text-xs font-black px-4 py-2.5 sm:px-7 sm:py-3.5 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 hover:shadow-purple-200 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
                                 >
-                                  <Plus size={18} /> TAMBAH
+                                  <Plus className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px]" /> TAMBAH
                                 </button>
                               )}
                             </div>
@@ -430,33 +430,33 @@ export default function VendorDetailPage({ params }: Props) {
                 {vendor.services.map((s) => {
                   const inCart = cart.find(c => c.id === s.id)
                   return (
-                    <div key={s.id} className="bg-white rounded-[28px] p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div key={s.id} className="bg-white rounded-[24px] sm:rounded-[28px] p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-black text-lg text-gray-900 mb-2">{s.title}</h3>
-                        {s.description && <p className="text-xs text-gray-400 mb-4 font-medium leading-relaxed italic">{s.description}</p>}
-                        <div className="flex justify-between items-end mt-4 gap-4">
-                          <div className="flex-1">
-                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1 block">Estimasi Biaya</span>
+                        <h3 className="font-black text-base sm:text-lg text-gray-900 mb-1.5 sm:mb-2">{s.title}</h3>
+                        {s.description && <p className="text-[11px] sm:text-xs text-gray-400 mb-3 sm:mb-4 font-medium leading-relaxed italic">{s.description}</p>}
+                        <div className="flex flex-row justify-between items-end mt-3 sm:mt-4 gap-2 sm:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[9px] sm:text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1 block truncate">Estimasi Biaya</span>
                             {s.price ? (
-                              <p className="text-lg font-black text-purple-600 whitespace-nowrap leading-none">{formatCurrency(s.price)}</p>
+                              <p className="text-[13px] sm:text-lg font-black text-purple-600 truncate leading-none">{formatCurrency(s.price)}</p>
                             ) : (
-                              <Badge variant="secondary" className="normal-case py-1.5">Hubungi untuk harga</Badge>
+                              <Badge variant="secondary" className="normal-case py-1 text-[10px] sm:text-xs">Hubungi</Badge>
                             )}
                           </div>
                           <div className="shrink-0">
                              {s.price ? (
                                 inCart ? (
-                                  <div className="flex items-center gap-3 bg-gray-50 rounded-full p-1.5 border border-purple-100">
-                                    <button onClick={() => removeFromCart(s.id)} className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus size={14} /></button>
-                                    <span className="text-sm font-black px-1 min-w-[24px] text-center text-purple-700">{inCart.quantity}</span>
-                                    <button onClick={() => addToCart(s, 'service')} className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={14} /></button>
+                                  <div className="flex items-center gap-2 sm:gap-3 bg-gray-50 rounded-full p-1.5 border border-purple-100">
+                                    <button onClick={() => removeFromCart(s.id)} className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /></button>
+                                    <span className="text-xs sm:text-sm font-black px-1 min-w-[20px] sm:min-w-[24px] text-center text-purple-700">{inCart.quantity}</span>
+                                    <button onClick={() => addToCart(s, 'service')} className="w-7 h-7 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /></button>
                                   </div>
                                 ) : (
                                   <button
                                     onClick={() => addToCart(s, 'service')}
-                                    className="bg-purple-600 text-white text-[11px] font-black px-6 py-3 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-wider"
+                                    className="bg-purple-600 text-white text-[10px] sm:text-[11px] font-black px-4 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
                                   >
-                                    <Plus size={16} /> PESAN
+                                    <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> PESAN
                                   </button>
                                 )
                              ) : (
@@ -464,9 +464,9 @@ export default function VendorDetailPage({ params }: Props) {
                                   phone={vendor.phone} 
                                   vendorName={vendor.name} 
                                   isTransport={false}
-                                  className="bg-green-600 text-white text-[11px] font-black px-6 py-3 rounded-full shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center gap-2 uppercase tracking-wider"
+                                  className="bg-green-600 text-white text-[10px] sm:text-[11px] font-black px-4 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center gap-1.5 sm:gap-2 uppercase tracking-wider"
                                >
-                                 <MessageCircle size={16} /> Tanya Harga
+                                 <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Tanya
                                </WhatsAppCTA>
                              )}
                           </div>

@@ -49,7 +49,7 @@ export function ImageSlider({ images, alt }: ImageSliderProps) {
           src={images[0].url}
           alt={alt}
           fill
-          className="object-cover"
+          className="object-contain"
           priority
         />
       </div>
@@ -66,7 +66,7 @@ export function ImageSlider({ images, alt }: ImageSliderProps) {
                 src={image.url}
                 alt={`${alt} - ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-contain"
                 priority={index === 0}
               />
             </div>
