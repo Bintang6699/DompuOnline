@@ -122,41 +122,7 @@ export default function VendorDetailAdminPage() {
         const errorData = await res.json()
         throw new Error(errorData.error || 'Gagal memperbarui informasi')
       }
-      
-      const newCat = allCategories.find(c => c.id === editForm.category_id)
-      setVendor((prev: any) => ({ 
-        ...prev, 
-        name: editForm.name, 
-        owner_name: editForm.owner_name, 
-        phone: editForm.phone, 
-        category_id: editForm.category_id,
-        description: editForm.description,
-        address_detail: editForm.address_detail,
-        hashtags: editForm.hashtags,
-        is_cod: editForm.is_cod,
-        categories: newCat
-      }))
-      setIsEditing(false)
-      alert('Informasi dasar berhasil diperbarui!')
-    } catch (err: any) {
-      alert(`Gagal memperbarui informasi: ${err.message}`)
-    }
-  }
-
-  const handleSaveProduct = async () => {
-    try {
-      const data = {
-        vendor_id: id,
-        name: productForm.name,
-        price: parseFloat(productForm.price.replace(/\D/g, '')) || 0,
-        description: productForm.description,
-        image_url: productForm.image_url,
-      }
-
-      if (editingProduct) {
-        const { error } = await supabase.from('products').update(data).eq('id', editingProduct.id)
-        if (error) throw error
-      } else {
+ else {
         const { error } = await supabase.from('products').insert(data)
         if (error) throw error
       }

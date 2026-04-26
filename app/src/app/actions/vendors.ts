@@ -2,11 +2,11 @@
 
 import { createAdminClient } from '@/lib/supabase'
 
-export async function getPublicVendors(searchQuery?: string) {
+export async function getPublicVendors() {
   const adminSupabase = createAdminClient()
   
   try {
-    let query = adminSupabase
+    const { data } = await adminSupabase
       .from('vendors')
       .select(`
         *,
@@ -18,18 +18,6 @@ export async function getPublicVendors(searchQuery?: string) {
       `)
       .eq('status', 'approved')
       .gte('subscription_end', new Date().toISOString())
-
-    if (searchQuery) {
-      const q = searchQuery.trim()
-      if (q.startsWith('#')) {
-        const tag = q.replace('#', '')
-        query = query.contains('hashtags', [tag])
-      } else {
-        query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%,owner_name.ilike.%${q}%,hashtags.cs.{${q}}`)
-      }
-    }
-
-    const { data } = await query
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false })
 

@@ -1,33 +1,31 @@
 'use client'
-import Image from 'next/image'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Phone, MapPin, Star, Crown, CheckCircle, Truck, Heart } from 'lucide-react'
+import Image from 'next/image'
 import { Vendor } from '@/lib/types'
-import { useState, useEffect } from 'react'
-import { buildPhoneUrl, formatCurrency } from '@/lib/utils'
-import { WhatsAppCTA } from './WhatsAppCTA'
-import { ShareButton } from '@/components/ui/ShareButton'
+import { Heart, ChevronRight, Package } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { formatCurrency } from '@/lib/utils'
 
-interface VendorCardProps {
-  vendor: Vendor
-  shrink?: boolean
-}
-
-export function VendorCard({ vendor, shrink }: VendorCardProps) {
-  const [likes, setLikes] = useState(vendor.likes_count || 0)
+export function VendorCard({ vendor }: { vendor: Vendor }) {
   const [isLiked, setIsLiked] = useState(false)
+  const [likes, setLikes] = useState(vendor.likes_count || 0)
+  const [hasMounted, setHasMounted] = useState(false)
+  const mountedRef = useRef(false)
 
   useEffect(() => {
-    const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
-    if (likedVendors.includes(vendor.id)) {
-      setIsLiked(true)
+    if (!mountedRef.current) {
+      setHasMounted(true)
+      const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+      if (likedVendors.includes(vendor.id)) {
+        setIsLiked(true)
+      }
+      mountedRef.current = true
     }
   }, [vendor.id])
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault()
-    e.stopPropagation()
-
     if (isLiked) return
 
     try {
@@ -39,163 +37,70 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
         const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
         localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
       }
-    } catch (err) {
-      console.error('Error liking vendor:', err)
+    } catch (error) {
+      console.error('Error liking vendor:', error)
     }
   }
 
-  const coverImage = vendor.media?.find((m) => (m.type as string) === 'image' || (m.type as string) === 'thumb')?.url || vendor.media?.[0]?.url
-  const rating = vendor.ratings?.[0]
-  const avgRating = rating
-    ? ((rating.quality_score + rating.cleanliness_score + rating.trust_score) / 3).toFixed(1)
-    : null
+  const mainImage = vendor.media?.find(m => m.type === 'image')?.url || '/placeholder-vendor.png'
 
-  // Calculate minimum price
-  const prices: number[] = []
-  if (vendor.products && vendor.products.length > 0) {
-    vendor.products.forEach(p => prices.push(p.price))
-  }
-  if (vendor.services && vendor.services.length > 0) {
-    vendor.services.forEach(s => s.price && prices.push(s.price))
-  }
-  const minPrice = prices.length > 0 ? Math.min(...prices) : null
+  if (!hasMounted) return <VendorCardSkeleton />
 
   return (
-    <div className={`vendor-card bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col h-full border border-gray-100 ${shrink ? '' : ''}`}>
-      {/* Cover Image */}
-      <Link href={`/vendor/${vendor.id}`} className={`block relative bg-gradient-to-br from-purple-100 to-purple-50 overflow-hidden shrink-0 ${shrink ? 'aspect-[4/3]' : 'aspect-[16/9]'}`}>
-        {coverImage ? (
+    <motion.div
+      whileHover={{ y: -8 }}
+      className="group relative bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100/50"
+    >
+      <Link href={`/vendor/${vendor.id}`}>
+        <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={coverImage}
+            src={mainImage}
             alt={vendor.name}
             fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition-transform duration-1000 group-hover:scale-110"
           />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <span className="text-5xl">{vendor.categories?.icon || '🏪'}</span>
-          </div>
-        )}
-        {/* Featured badge */}
-        {vendor.is_featured && (
-          <div className="absolute top-2 left-2">
-            <span className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold px-2.5 py-1 rounded-full featured-pulse shadow-sm">
-              <Crown size={10} />
-              Unggulan
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <span className="bg-white/90 backdrop-blur-md text-purple-600 text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg flex items-center gap-1.5 border border-purple-100">
+              <Package size={12} /> {vendor.categories?.name}
             </span>
           </div>
-        )}
-        {/* Category badge & Likes */}
-        <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
           <button
             onClick={handleLike}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md transition-all ${
-              isLiked
-              ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-105'
-              : 'bg-black/40 text-white hover:bg-black/60'
+            className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg backdrop-blur-md border ${
+              isLiked ? 'bg-red-500 border-red-400 text-white' : 'bg-white/80 border-white/50 text-gray-400 hover:text-red-500'
             }`}
           >
-            <Heart size={12} className={isLiked ? 'fill-current' : ''} />
-            <span className="text-[10px] font-black">{likes}</span>
+            <Heart size={20} className={isLiked ? 'fill-current' : ''} />
           </button>
-          <span className="bg-black/40 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
-            {vendor.categories?.name || 'Bisnis'}
-          </span>
-          {vendor.is_cod && (
-            <span className="bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black flex items-center gap-1 shadow-sm">
-              <Truck size={10} /> COD
-            </span>
-          )}
+        </div>
+        <div className="p-6">
+          <h3 className="text-lg font-black text-gray-900 truncate uppercase tracking-tight group-hover:text-purple-600 transition-colors">
+            {vendor.name}
+          </h3>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-tight mt-1">{vendor.owner_name}</p>
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-base font-black text-purple-600 font-mono">
+              {vendor.products?.[0] ? formatCurrency(vendor.products[0].price) : 'Hubungi Seller'}
+            </p>
+            <div className="flex items-center gap-2 text-gray-300">
+               <span className="text-[10px] font-black">{likes} LIKES</span>
+               <ChevronRight size={18} />
+            </div>
+          </div>
         </div>
       </Link>
-
-      {/* Content */}
-      <div className={`${shrink ? 'p-2.5' : 'p-4'} flex flex-col flex-1`}>
-        <Link href={`/vendor/${vendor.id}`}>
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className={`font-bold text-gray-900 leading-tight line-clamp-1 ${shrink ? 'text-sm' : 'text-base'}`}>{vendor.name}</h3>
-            {avgRating && (
-              <div className="flex items-center gap-1 shrink-0">
-                <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                <span className="text-xs font-bold text-gray-700">{avgRating}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-1 mt-0.5 mb-1.5">
-            <CheckCircle size={shrink ? 10 : 12} className="text-green-500 shrink-0" />
-            <span className={`${shrink ? 'text-[9px]' : 'text-xs'} text-gray-500 line-clamp-1`}>
-              Terverifikasi · {vendor.owner_name}
-            </span>
-          </div>
-          
-          <p className={`${shrink ? 'text-[10px] line-clamp-1 mb-2' : 'text-xs line-clamp-2 mb-3'} text-gray-400 leading-relaxed`}>
-            {vendor.description}
-          </p>
-
-          {vendor.hashtags && vendor.hashtags.length > 0 && !shrink && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {vendor.hashtags.slice(0, 3).map(tag => (
-                <span key={tag} className="text-[9px] font-bold text-purple-500 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-100">#{tag}</span>
-              ))}
-            </div>
-          )}
-          
-          {minPrice !== null && (
-            <div className={`${shrink ? 'mb-2' : 'mb-3'}`}>
-              <span className={`${shrink ? 'text-[8px]' : 'text-[10px]'} text-gray-400 font-medium block leading-none mb-0.5 uppercase tracking-tighter`}>Mulai dari</span>
-              <p className={`${shrink ? 'text-xs' : 'text-sm'} font-black text-purple-600 leading-none`}>{formatCurrency(minPrice)}</p>
-            </div>
-          )}
-          
-          {vendor.maps_link && (
-            <div className={`flex items-center gap-1 text-gray-400 ${shrink ? 'mb-2' : 'mb-3'}`}>
-              <MapPin size={shrink ? 9 : 11} className="text-purple-400" />
-              <span className={`${shrink ? 'text-[9px]' : 'text-xs'} line-clamp-1`}>Dompu, NTB</span>
-            </div>
-          )}
-        </Link>
-
-        {/* CTA Buttons */}
-        <div className={`flex gap-1 mt-auto ${shrink ? 'pt-1' : 'pt-2'}`}>
-          <WhatsAppCTA 
-            phone={vendor.phone} 
-            vendorName={vendor.name} 
-            isTransport={vendor.categories?.slug === 'transport'}
-            shrink={shrink}
-          />
-          {!shrink && (
-            <>
-              <a
-                href={buildPhoneUrl(vendor.phone)}
-                className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center"
-                onClick={(e) => e.stopPropagation()}
-                title="Telepon"
-              >
-                <Phone size={15} />
-              </a>
-              <ShareButton
-                title={vendor.name}
-                text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
-                url={`/vendor/${vendor.id}`}
-                className="px-3 py-2.5 rounded-xl border border-gray-200 text-gray-400 hover:text-purple-600 hover:bg-purple-50"
-              />
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+    </motion.div>
   )
 }
 
 export function VendorCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-      <div className="aspect-[16/9] skeleton" />
-      <div className="p-4 space-y-3">
-        <div className="h-5 w-3/4 skeleton rounded-lg" />
-        <div className="h-3 w-1/2 skeleton rounded-lg" />
-        <div className="h-8 w-full skeleton rounded-lg" />
+    <div className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 animate-pulse">
+      <div className="aspect-[4/3] bg-gray-100" />
+      <div className="p-6">
+        <div className="h-6 bg-gray-100 rounded-lg w-3/4 mb-3" />
+        <div className="h-4 bg-gray-100 rounded-lg w-1/2 mb-6" />
       </div>
     </div>
   )

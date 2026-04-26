@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-// GET /api/admin/vendors/[id] — fetch single vendor with all related data (bypasses RLS)
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -30,13 +29,12 @@ export async function GET(
     if (!data) return NextResponse.json({ error: 'Vendor tidak ditemukan' }, { status: 404 })
 
     return NextResponse.json({ vendor: data })
-  } catch (error: Error) {
+  } catch (error) {
     console.error('GET /api/admin/vendors/[id] error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }
 
-// PATCH /api/admin/vendors/[id] — update vendor info
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -50,13 +48,12 @@ export async function PATCH(
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: Error) {
+  } catch (error) {
     console.error('PATCH /api/admin/vendors/[id] error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }
 
-// DELETE /api/admin/vendors/[id] — delete vendor
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -69,8 +66,8 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: Error) {
+  } catch (error) {
     console.error('DELETE /api/admin/vendors/[id] error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }

@@ -1,2 +1,0 @@
--- Migration to add likes_count to vendors table
-ALTER TABLE vendors ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;

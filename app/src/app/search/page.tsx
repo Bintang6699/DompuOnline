@@ -3,8 +3,9 @@ import { BottomNav } from '@/components/layout/BottomNav'
 
 export const dynamic = 'force-dynamic'
 import { VendorCard } from '@/components/vendors/VendorCard'
+import { createAdminClient } from '@/lib/supabase'
+import { Vendor } from '@/lib/types'
 import { Search } from 'lucide-react'
-import { getPublicVendors } from '@/app/actions/vendors'
 
 interface Props {
   searchParams: Promise<{ q?: string }>
@@ -14,9 +15,35 @@ export const metadata = {
   title: 'Cari di DompuOnline',
 }
 
+const adminSupabase = createAdminClient()
+
+async function searchVendors(query: string): Promise<Vendor[]> {
+  if (!query.trim()) return []
+  try {
+    const { data, error } = await adminSupabase
+      .from('vendors')
+      .select(`
+        *,
+        categories(id, name, icon, slug),
+        media(id, type, url),
+        ratings(quality_score, cleanliness_score, trust_score)
+      `)
+      .eq('status', 'approved')
+      .eq('subscription_status', 'active')
+      .gte('subscription_end', new Date().toISOString())
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%,owner_name.ilike.%${query}%,hashtags.cs.{${query}}`)
+      .order('is_featured', { ascending: false })
+      .limit(20)
+    if (error) throw error
+    return data || []
+  } catch {
+    return []
+  }
+}
+
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams
-  const vendors = q ? await getPublicVendors(q) : []
+  const vendors = q ? await searchVendors(q) : []
 
   return (
     <div className="min-h-screen bg-gray-50/50">

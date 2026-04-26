@@ -9,14 +9,9 @@ export async function POST(
     const { id } = await params
     const supabase = createAdminClient()
 
-    // Use RPC for atomic increment to avoid race conditions
-    // Assuming the 'increment_likes' function exists in Supabase
-    // If not, we'll fall back to a raw SQL query or standard increment
     const { data, error } = await supabase.rpc('increment_likes', { vendor_id: id })
 
     if (error) {
-      console.error('RPC Error, falling back to manual increment:', error)
-      // Fallback: Manual increment if RPC is missing
       const { data: vendor } = await supabase
         .from('vendors')
         .select('likes_count')
@@ -37,7 +32,7 @@ export async function POST(
     }
 
     return NextResponse.json({ likes_count: data })
-  } catch (error: Error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }
