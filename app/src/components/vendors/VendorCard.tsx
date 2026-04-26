@@ -69,7 +69,7 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
             src={coverImage}
             alt={vendor.name}
             fill
-            className="object-cover"
+            className="object-contain p-2"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
@@ -144,7 +144,7 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
           {minPrice !== null && (
             <div className={`${shrink ? 'mb-2' : 'mb-3'}`}>
               <span className={`${shrink ? 'text-[8px]' : 'text-[10px]'} text-gray-400 font-medium block leading-none mb-0.5 uppercase tracking-tighter`}>Mulai dari</span>
-              <p className={`${shrink ? 'text-xs' : 'text-sm'} font-black text-purple-600 leading-none`}>{formatCurrency(minPrice)}</p>
+              <p className={`${shrink ? 'text-xs' : 'text-sm'} font-black text-purple-600 leading-none whitespace-nowrap`}>{formatCurrency(minPrice)}</p>
             </div>
           )}
           
