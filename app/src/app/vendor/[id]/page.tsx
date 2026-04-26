@@ -381,7 +381,7 @@ export default function VendorDetailPage({ params }: Props) {
                           </div>
 
                           <div className="flex justify-between items-center mt-2">
-                            <p className="text-base font-black text-purple-600">
+                            <p className="text-base font-black text-purple-600 whitespace-nowrap">
                               {formatCurrency(p.price)}
                             </p>
                             <div className="shrink-0">
@@ -430,7 +430,7 @@ export default function VendorDetailPage({ params }: Props) {
                         <div className="flex justify-between items-center mt-2 gap-2">
                           <div className="flex-1">
                             {s.price ? (
-                              <p className="text-base font-black text-purple-600">{formatCurrency(s.price)}</p>
+                                <p className="text-base font-black text-purple-600 whitespace-nowrap">{formatCurrency(s.price)}</p>
                             ) : (
                               <Badge variant="secondary" className="normal-case">Hubungi untuk harga</Badge>
                             )}
@@ -531,9 +531,9 @@ export default function VendorDetailPage({ params }: Props) {
                       {cart.reduce((a, b) => a + b.quantity, 0)}
                     </span>
                   </div>
-                  <div>
+                  <div className="text-left">
                     <p className="text-xs font-bold text-purple-200">Total Pesanan</p>
-                    <p className="text-sm font-black">{formatCurrency(totalPrice)}</p>
+                    <p className="text-sm font-black whitespace-nowrap">{formatCurrency(totalPrice)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 font-black text-sm">
@@ -628,7 +628,7 @@ export default function VendorDetailPage({ params }: Props) {
                   </div>
                   <div className="text-left">
                     <p className="text-xs font-bold text-purple-200">Total Pesanan</p>
-                    <p className="text-sm font-black">{formatCurrency(totalPrice)}</p>
+                    <p className="text-sm font-black whitespace-nowrap">{formatCurrency(totalPrice)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 font-black text-sm">
