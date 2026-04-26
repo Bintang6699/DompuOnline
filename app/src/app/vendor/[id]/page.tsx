@@ -181,10 +181,10 @@ export default function VendorDetailPage({ params }: Props) {
           )}
         </div>
 
-        <div className="px-4 mt-5 space-y-6">
+        <div className="px-4 mt-6 space-y-10">
           {/* Profile Section */}
-          <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
-            <div className="flex justify-between items-start gap-4 mb-4">
+          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-start gap-6 mb-6">
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-black text-gray-900 leading-tight mb-1">{vendor.name}</h1>
                 <div className="flex items-center gap-1.5 text-gray-500">
@@ -206,7 +206,7 @@ export default function VendorDetailPage({ params }: Props) {
             </div>
 
             {/* Tags & Status */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2.5 mb-8">
               <Badge variant={vendor.categories?.slug === 'kuliner' ? 'kuliner' : 'outline'}>
                 {vendor.categories?.name}
               </Badge>
@@ -224,7 +224,7 @@ export default function VendorDetailPage({ params }: Props) {
             </div>
 
             {/* Actions Row */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-8">
               <button
                 onClick={handleLike}
                 className={`flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-xs transition-all border-2 active:scale-95 ${
@@ -245,9 +245,9 @@ export default function VendorDetailPage({ params }: Props) {
             </div>
 
             {/* Description */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className={cn(
-                "text-sm text-gray-600 leading-relaxed whitespace-pre-wrap transition-all duration-300 relative",
+                "text-sm text-gray-500 font-medium leading-relaxed whitespace-pre-wrap transition-all duration-300 relative",
                 !isDescriptionExpanded && "max-h-24 overflow-hidden"
               )}>
                 {vendor.description}
@@ -354,29 +354,29 @@ export default function VendorDetailPage({ params }: Props) {
                 {vendor.products.map((p) => {
                   const inCart = cart.find(c => c.id === p.id)
                   return (
-                    <div key={p.id} className="group relative bg-white rounded-[28px] p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-                      <div className="flex gap-5">
+                    <div key={p.id} className="group relative bg-white rounded-[32px] p-5 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex gap-6">
                         {p.image_url ? (
-                          <div className="shrink-0 w-28 h-28 rounded-[24px] overflow-hidden bg-gray-50 border border-gray-100">
+                          <div className="shrink-0 w-32 h-32 rounded-[28px] overflow-hidden bg-gray-50 border border-gray-100 shadow-inner">
                             <Image 
                               src={p.image_url} 
                               alt={p.name} 
-                              width={112}
-                              height={112}
-                              className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
+                              width={128}
+                              height={128}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                           </div>
                         ) : (
-                          <div className="shrink-0 w-28 h-28 rounded-[24px] bg-purple-50 flex items-center justify-center text-purple-200 border border-purple-100">
-                            <Package size={40} />
+                          <div className="shrink-0 w-32 h-32 rounded-[28px] bg-purple-50 flex items-center justify-center text-purple-200 border border-purple-100">
+                            <Package size={48} />
                           </div>
                         )}
                         
                         <div className="flex-1 flex flex-col justify-between py-1">
                           <div>
-                            <h3 className="font-black text-lg text-gray-900 leading-tight mb-1.5">{p.name}</h3>
+                            <h3 className="font-black text-xl text-gray-900 leading-tight mb-2">{p.name}</h3>
                             {p.description && (
-                              <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 font-medium">
+                              <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 font-medium italic">
                                 {p.description}
                               </p>
                             )}
@@ -384,24 +384,24 @@ export default function VendorDetailPage({ params }: Props) {
 
                           <div className="flex justify-between items-end mt-4">
                             <div className="flex flex-col">
-                              <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1">Harga</span>
-                              <p className="text-lg font-black text-purple-600 whitespace-nowrap leading-none">
+                              <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none mb-1.5">Harga Terbaik</span>
+                              <p className="text-xl font-black text-purple-600 whitespace-nowrap leading-none">
                                 {formatCurrency(p.price)}
                               </p>
                             </div>
                             <div className="shrink-0">
                               {inCart ? (
-                                <div className="flex items-center gap-3 bg-gray-50 rounded-full p-1.5 border border-purple-100">
-                                  <button onClick={() => removeFromCart(p.id)} className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus size={14} /></button>
-                                  <span className="text-sm font-black px-1 min-w-[24px] text-center text-purple-700">{inCart.quantity}</span>
-                                  <button onClick={() => addToCart(p, 'product')} className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={14} /></button>
+                                <div className="flex items-center gap-3 bg-gray-50 rounded-full p-2 border border-purple-100 shadow-inner">
+                                  <button onClick={() => removeFromCart(p.id)} className="w-9 h-9 bg-white rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 shadow-sm transition-all"><Minus size={16} /></button>
+                                  <span className="text-base font-black px-1 min-w-[28px] text-center text-purple-700">{inCart.quantity}</span>
+                                  <button onClick={() => addToCart(p, 'product')} className="w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={16} /></button>
                                 </div>
                               ) : (
                                 <button 
                                   onClick={() => addToCart(p, 'product')}
-                                  className="bg-purple-600 text-white text-[11px] font-black px-6 py-3 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-wider"
+                                  className="bg-purple-600 text-white text-xs font-black px-7 py-3.5 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 hover:shadow-purple-200 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-wider"
                                 >
-                                  <Plus size={16} /> TAMBAH
+                                  <Plus size={18} /> TAMBAH
                                 </button>
                               )}
                             </div>
@@ -616,9 +616,9 @@ export default function VendorDetailPage({ params }: Props) {
               phone={vendor.phone}
               vendorName={vendor.name}
               isTransport={vendor.categories?.slug === 'transport'}
-              className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-base py-4 rounded-[24px] flex items-center justify-center gap-3 shadow-[0_12px_40px_-10px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all uppercase tracking-wider"
+              className="w-full bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white font-black text-base py-5 rounded-[28px] flex items-center justify-center gap-3 shadow-[0_15px_45px_-12px_rgba(16,185,129,0.6)] active:scale-[0.98] transition-all uppercase tracking-widest featured-pulse"
             >
-              <MessageCircle size={24} className="drop-shadow-md" />
+              <MessageCircle size={26} className="drop-shadow-lg" />
               {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact via WhatsApp'}
             </WhatsAppCTA>
           ) : (
