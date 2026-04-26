@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { supabase } from '@/lib/supabase'
 import { Vendor, Product, Service } from '@/lib/types'
-import { buildWhatsAppUrl, buildPhoneUrl, formatDate, formatCurrency } from '@/lib/utils'
+import { buildWhatsAppUrl, buildPhoneUrl, formatDate, formatCurrency, cn } from '@/lib/utils'
 import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
@@ -14,6 +14,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from '@/components/vendors/WhatsAppCTA'
 import { ShareButton } from '@/components/ui/ShareButton'
+import { ImageSlider } from '@/components/vendors/ImageSlider'
+import Link from 'next/link'
 
 interface CartItem {
   id: string
@@ -37,6 +39,7 @@ export default function VendorDetailPage({ params }: Props) {
   const [id, setId] = useState<string | null>(null)
   const [likes, setLikes] = useState(0)
   const [isLiked, setIsLiked] = useState(false)
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
 
   useEffect(() => {
     params.then(p => setId(p.id))
@@ -167,91 +170,117 @@ export default function VendorDetailPage({ params }: Props) {
           </button>
         </div>
 
-        {/* Cover Image */}
-        <div className="relative mx-4 mt-3 aspect-[16/9] rounded-2xl overflow-hidden bg-purple-50">
-          {coverImage ? (
-            <Image src={coverImage} alt={vendor.name} fill className="object-cover" priority />
-          ) : (
-            <div className="flex items-center justify-center h-full text-7xl">
-              {vendor.categories?.icon || '🏪'}
-            </div>
-          )}
+        {/* Gallery / Image Slider */}
+        <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-sm bg-purple-50 relative">
+          <ImageSlider images={images} alt={vendor.name} />
           {vendor.is_featured && (
-            <div className="absolute top-3 left-3">
-              <span className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
-                <Crown size={11} /> Unggulan
+            <div className="absolute top-3 left-3 z-10">
+              <span className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg featured-pulse">
+                <Crown size={11} /> UNGGULAN
               </span>
             </div>
           )}
         </div>
 
-        <div className="px-4 mt-4 space-y-5">
-          {/* Header Info */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="px-4 mt-5 space-y-6">
+          {/* Profile Section */}
+          <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-start gap-4 mb-4">
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-black text-gray-900 truncate">{vendor.name}</h1>
-                <p className="text-sm text-gray-500 mt-0.5">
-                  Pemilik: <span className="font-semibold">{vendor.owner_name}</span>
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleLike}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                    isLiked
-                    ? 'bg-red-500 text-white shadow-lg shadow-red-500/20'
-                    : 'bg-red-50 text-red-500 hover:bg-red-100'
-                  }`}
-                >
-                  <Heart size={20} className={isLiked ? 'fill-current' : ''} />
-                </button>
-                <ShareButton
-                  title={vendor.name}
-                  text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
-                  url={`/vendor/${vendor.id}`}
-                  className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100"
-                />
+                <h1 className="text-2xl font-black text-gray-900 leading-tight mb-1">{vendor.name}</h1>
+                <div className="flex items-center gap-1.5 text-gray-500">
+                  <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Star size={10} className="text-purple-600 fill-purple-600" />
+                  </div>
+                  <p className="text-sm font-semibold">
+                    Pemilik: <span className="text-gray-900">{vendor.owner_name}</span>
+                  </p>
+                </div>
               </div>
               {avgRating && (
-                <div className="flex flex-col items-center bg-yellow-50 rounded-xl p-2.5 min-w-[56px]">
-                  <Star size={18} className="text-yellow-400 fill-yellow-400" />
-                  <span className="text-lg font-black text-gray-800">{avgRating}</span>
-                  <span className="text-[10px] text-gray-400">Rating</span>
+                <div className="flex flex-col items-center bg-yellow-50 rounded-2xl p-3 min-w-[64px] border border-yellow-100 shadow-sm">
+                  <Star size={20} className="text-yellow-400 fill-yellow-400 mb-0.5" />
+                  <span className="text-lg font-black text-gray-800 leading-none">{avgRating}</span>
+                  <span className="text-[8px] font-bold text-yellow-600 uppercase tracking-tighter mt-1">Rating</span>
                 </div>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="outline" className="uppercase tracking-wider font-bold">{vendor.categories?.name}</Badge>
-              <span className="flex items-center gap-1 text-xs text-green-600 bg-green-50 rounded-full px-2.5 py-1 font-semibold">
-                <CheckCircle size={11} />
-                Terverifikasi
-              </span>
+            {/* Tags & Status */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Badge variant={vendor.categories?.slug === 'kuliner' ? 'kuliner' : 'outline'}>
+                {vendor.categories?.name}
+              </Badge>
+              <Badge variant="success">
+                <CheckCircle size={10} className="mr-1" /> Terverifikasi
+              </Badge>
               {vendor.is_cod && (
-                <span className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 rounded-full px-2.5 py-1 font-semibold">
-                  <Truck size={11} />
-                  Bisa COD
-                </span>
+                <Badge variant="blue">
+                  <Truck size={10} className="mr-1" /> Bisa COD
+                </Badge>
               )}
-              <span className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 rounded-full px-2.5 py-1">
-                <Clock size={11} />
-                Aktif · {formatDate(vendor.created_at)}
-              </span>
-              <span className={`flex items-center gap-1 text-xs rounded-full px-2.5 py-1 font-bold ${
-                isLiked ? 'bg-red-500 text-white' : 'bg-red-50 text-red-500'
-              }`}>
-                <Heart size={11} className={isLiked ? 'fill-current' : ''} />
-                {likes} Disukai
-              </span>
+              <div className="flex items-center gap-1 px-2.5 py-1 bg-gray-50 text-gray-500 rounded-full text-[10px] font-bold border border-gray-100">
+                <Clock size={10} /> Aktif · {formatDate(vendor.created_at)}
+              </div>
             </div>
 
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap mb-4">{vendor.description}</p>
+            {/* Actions Row */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button
+                onClick={handleLike}
+                className={`flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-xs transition-all border-2 active:scale-95 ${
+                  isLiked
+                  ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-200 animate-in zoom-in duration-300'
+                  : 'bg-white border-red-100 text-red-500 hover:bg-red-50'
+                }`}
+              >
+                <Heart size={18} className={isLiked ? 'fill-current' : ''} />
+                {likes} DISUKAI
+              </button>
+              <ShareButton
+                title={vendor.name}
+                text={`Cek ${vendor.name} di DompuOnline! ${vendor.description.slice(0, 100)}...`}
+                url={`/vendor/${vendor.id}`}
+                className="flex items-center justify-center gap-2 py-3 bg-purple-50 text-purple-600 rounded-2xl font-black text-xs border-2 border-purple-100 hover:bg-purple-100 transition-all"
+              />
+            </div>
 
+            {/* Description */}
+            <div className="space-y-3">
+              <div className={cn(
+                "text-sm text-gray-600 leading-relaxed whitespace-pre-wrap transition-all duration-300 relative",
+                !isDescriptionExpanded && "max-h-24 overflow-hidden"
+              )}>
+                {vendor.description}
+                {!isDescriptionExpanded && vendor.description.length > 150 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
+                )}
+              </div>
+              {vendor.description.length > 150 && (
+                <button
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  className="text-purple-600 text-xs font-black uppercase tracking-wider flex items-center gap-1"
+                >
+                  {isDescriptionExpanded ? (
+                    <>Tutup <Minus size={14} /></>
+                  ) : (
+                    <>Baca Selengkapnya <Plus size={14} /></>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Hashtags */}
             {vendor.hashtags && vendor.hashtags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-gray-50">
+              <div className="flex flex-wrap gap-2 pt-5 mt-5 border-t border-gray-50">
                 {vendor.hashtags.map(tag => (
-                  <span key={tag} className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg border border-purple-100">#{tag}</span>
+                  <Link
+                    key={tag}
+                    href={`/search?q=${encodeURIComponent(tag)}`}
+                    className="text-[10px] font-black text-purple-600 bg-purple-50/50 px-3 py-1.5 rounded-xl border border-purple-100 hover:bg-purple-100 transition-colors"
+                  >
+                    #{tag}
+                  </Link>
                 ))}
               </div>
             )}
@@ -259,19 +288,24 @@ export default function VendorDetailPage({ params }: Props) {
 
           {/* Location Detail */}
           {vendor.address_detail && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
-               <h2 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                 <MapPin size={16} className="text-purple-600" /> Alamat Lengkap
+            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+               <h2 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
+                 <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
+                    <MapPin size={18} className="text-purple-600" />
+                 </div>
+                 Lokasi & Alamat
                </h2>
-               <p className="text-sm text-gray-600 leading-relaxed mb-4">{vendor.address_detail}</p>
+               <div className="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-100">
+                 <p className="text-sm text-gray-600 leading-relaxed">{vendor.address_detail}</p>
+               </div>
                {vendor.maps_link && (
                  <a
                    href={vendor.maps_link}
                    target="_blank"
                    rel="noopener noreferrer"
-                   className="w-full bg-blue-50 text-blue-600 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors text-sm"
+                   className="w-full bg-blue-600 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98] text-sm uppercase tracking-wider"
                  >
-                   <Navigation size={16} /> LIHAT DI GOOGLE MAPS
+                   <Navigation size={18} /> LIHAT DI GOOGLE MAPS
                  </a>
                )}
             </div>
@@ -307,57 +341,62 @@ export default function VendorDetailPage({ params }: Props) {
 
           {/* Products */}
           {vendor.products && vendor.products.length > 0 && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Package size={16} className="text-purple-600" />
-                Daftar Produk / Menu
+            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
+                   <Package size={18} className="text-purple-600" />
+                </div>
+                Menu & Produk
               </h2>
               <div className="space-y-4">
                 {vendor.products.map((p) => {
                   const inCart = cart.find(c => c.id === p.id)
                   return (
-                    <div key={p.id} className="flex flex-col py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors rounded-xl px-2 -mx-2">
-                      <div className="flex items-start gap-3">
+                    <div key={p.id} className="group relative bg-gray-50/50 rounded-[20px] p-3 border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                      <div className="flex gap-4">
                         {p.image_url ? (
-                          <div className="shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
+                          <div className="shrink-0 w-24 h-24 rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
                             <Image 
                               src={p.image_url} 
                               alt={p.name} 
-                              width={64} 
-                              height={64} 
-                              className="w-full h-full object-cover"
+                              width={96}
+                              height={96}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             />
                           </div>
                         ) : (
-                          <div className="shrink-0 w-16 h-16 rounded-xl bg-purple-50 flex items-center justify-center text-purple-200">
-                            <Package size={20} />
+                          <div className="shrink-0 w-24 h-24 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-200">
+                            <Package size={32} />
                           </div>
                         )}
                         
-                        <div className="flex-1 min-w-0">
-                          <p className="font-black text-sm text-gray-900 leading-tight truncate">{p.name}</p>
-                          {p.description && (
-                            <p className="text-[11px] text-gray-400 mt-1 leading-snug line-clamp-2">
-                              {p.description}
-                            </p>
-                          )}
-                          <div className="flex justify-between items-center mt-2 gap-2">
-                            <p className="text-sm font-black text-purple-600">
+                        <div className="flex-1 flex flex-col justify-between py-0.5">
+                          <div>
+                            <p className="font-black text-base text-gray-900 leading-tight mb-1">{p.name}</p>
+                            {p.description && (
+                              <p className="text-[11px] text-gray-400 leading-snug line-clamp-2 italic">
+                                {p.description}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-base font-black text-purple-600">
                               {formatCurrency(p.price)}
                             </p>
                             <div className="shrink-0">
                               {inCart ? (
-                                <div className="flex items-center gap-1.5 bg-purple-50 rounded-full p-1 border border-purple-100">
-                                  <button onClick={() => removeFromCart(p.id)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm hover:bg-purple-600 hover:text-white transition-all"><Minus size={12} /></button>
-                                  <span className="text-[10px] font-black px-0.5 min-w-[16px] text-center">{inCart.quantity}</span>
-                                  <button onClick={() => addToCart(p, 'product')} className="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-sm hover:bg-purple-700 transition-all"><Plus size={12} /></button>
+                                <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm border border-purple-100">
+                                  <button onClick={() => removeFromCart(p.id)} className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all"><Minus size={14} /></button>
+                                  <span className="text-xs font-black px-1 min-w-[20px] text-center text-purple-700">{inCart.quantity}</span>
+                                  <button onClick={() => addToCart(p, 'product')} className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={14} /></button>
                                 </div>
                               ) : (
                                 <button 
                                   onClick={() => addToCart(p, 'product')}
-                                  className="bg-purple-600 text-white text-[9px] font-black px-3 py-2 rounded-full shadow-lg shadow-purple-200/50 flex items-center gap-1 active:scale-95 transition-all whitespace-nowrap"
+                                  className="bg-purple-600 text-white text-[10px] font-black px-5 py-2.5 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-1.5 uppercase tracking-wider"
                                 >
-                                  <Plus size={12} /> TAMBAH
+                                  <Plus size={14} /> TAMBAH
                                 </button>
                               )}
                             </div>
@@ -373,38 +412,43 @@ export default function VendorDetailPage({ params }: Props) {
 
           {/* Services */}
           {vendor.services && vendor.services.length > 0 && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Wrench size={16} className="text-purple-600" />
-                Layanan
+            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center">
+                   <Wrench size={18} className="text-purple-600" />
+                </div>
+                Layanan & Jasa
               </h2>
               <div className="space-y-4">
                 {vendor.services.map((s) => {
                   const inCart = cart.find(c => c.id === s.id)
                   return (
-                    <div key={s.id} className="flex flex-col py-3 border-b border-gray-50 last:border-0">
+                    <div key={s.id} className="bg-gray-50/50 rounded-[20px] p-4 border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
                       <div className="flex-1 min-w-0">
-                        <p className="font-extrabold text-sm text-gray-800">{s.title}</p>
-                        {s.description && <p className="text-[11px] text-gray-400 mt-0.5">{s.description}</p>}
+                        <p className="font-black text-base text-gray-900 mb-1">{s.title}</p>
+                        {s.description && <p className="text-[11px] text-gray-400 mb-3 italic">{s.description}</p>}
                         <div className="flex justify-between items-center mt-2 gap-2">
                           <div className="flex-1">
                             {s.price ? (
-                              <p className="text-sm font-black text-purple-600">{formatCurrency(s.price)}</p>
+                              <p className="text-base font-black text-purple-600">{formatCurrency(s.price)}</p>
                             ) : (
-                              <span className="text-[10px] text-gray-400 font-medium italic">Hubungi untuk harga</span>
+                              <Badge variant="secondary" className="normal-case">Hubungi untuk harga</Badge>
                             )}
                           </div>
                           <div className="shrink-0">
                              {s.price ? (
                                 inCart ? (
-                                  <div className="flex items-center gap-1.5 bg-purple-50 rounded-full p-1 border border-purple-100">
-                                    <button onClick={() => removeFromCart(s.id)} className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm"><Minus size={12} /></button>
-                                    <span className="text-[10px] font-black px-0.5 min-w-[16px] text-center">{inCart.quantity}</span>
-                                    <button onClick={() => addToCart(s, 'service')} className="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-sm"><Plus size={12} /></button>
+                                  <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm border border-purple-100">
+                                    <button onClick={() => removeFromCart(s.id)} className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all"><Minus size={14} /></button>
+                                    <span className="text-xs font-black px-1 min-w-[20px] text-center text-purple-700">{inCart.quantity}</span>
+                                    <button onClick={() => addToCart(s, 'service')} className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-md hover:bg-purple-700 transition-all"><Plus size={14} /></button>
                                   </div>
                                 ) : (
-                                  <button onClick={() => addToCart(s, 'service')} className="bg-purple-600 text-white text-[9px] font-black px-3 py-2 rounded-full shadow-md flex items-center gap-1 whitespace-nowrap">
-                                    <Plus size={12} /> PESAN
+                                  <button
+                                    onClick={() => addToCart(s, 'service')}
+                                    className="bg-purple-600 text-white text-[10px] font-black px-5 py-2.5 rounded-full shadow-lg shadow-purple-100 hover:bg-purple-700 active:scale-95 transition-all flex items-center gap-1.5 uppercase tracking-wider"
+                                  >
+                                    <Plus size={14} /> PESAN
                                   </button>
                                 )
                              ) : (
@@ -412,8 +456,10 @@ export default function VendorDetailPage({ params }: Props) {
                                   phone={vendor.phone} 
                                   vendorName={vendor.name} 
                                   isTransport={false}
-                                  className="bg-green-500 text-white text-[9px] font-black px-2.5 py-1.5 rounded-full whitespace-nowrap"
-                               >Tanya Harga</WhatsAppCTA>
+                                  className="bg-green-600 text-white text-[10px] font-black px-5 py-2.5 rounded-full shadow-lg shadow-green-100 hover:bg-green-700 transition-all flex items-center gap-1.5 uppercase tracking-wider"
+                               >
+                                 <MessageCircle size={14} /> Tanya Harga
+                               </WhatsAppCTA>
                              )}
                           </div>
                         </div>
@@ -454,19 +500,6 @@ export default function VendorDetailPage({ params }: Props) {
             </div>
           )}
 
-          {/* Image Gallery */}
-          {images.length > 1 && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm">
-              <h2 className="font-bold text-gray-900 mb-4">📸 Galeri Foto</h2>
-              <div className="grid grid-cols-3 gap-2">
-                {images.slice(1).map((img) => (
-                  <div key={img.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100">
-                    <Image src={img.url} alt={vendor.name} width={150} height={150} className="w-full h-full object-cover" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Video Profil */}
           {videos.length > 0 && (
@@ -567,22 +600,44 @@ export default function VendorDetailPage({ params }: Props) {
         </>
       )}
 
-      {/* Keep Category CTA for Transport or Empty Cart */}
-      {cart.length === 0 && (
-        <div className="fixed bottom-20 left-0 right-0 px-4 z-40">
-          <div className="max-w-lg mx-auto">
+      {/* Sticky Bottom CTA */}
+      <div className="fixed bottom-28 left-0 right-0 px-4 z-40 pointer-events-none">
+        <div className="max-w-lg mx-auto pointer-events-auto">
+          {cart.length === 0 ? (
             <WhatsAppCTA 
               phone={vendor.phone}
               vendorName={vendor.name}
               isTransport={vendor.categories?.slug === 'transport'}
-              className="btn-whatsapp w-full text-white font-bold text-base py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:-translate-y-1 transition-transform"
+              className="btn-whatsapp w-full text-white font-black text-base py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_8px_25px_-5px_rgba(34,197,94,0.4)] active:scale-[0.98] transition-all uppercase tracking-wider"
             >
               <MessageCircle size={22} />
-              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Hubungi via WhatsApp'}
+              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact via WhatsApp'}
             </WhatsAppCTA>
-          </div>
+          ) : (
+             <button
+               onClick={() => setShowCart(true)}
+               className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-2xl p-4 shadow-[0_8px_25px_-5px_rgba(147,51,234,0.4)] flex items-center justify-between group overflow-hidden relative active:scale-[0.98] transition-all"
+             >
+                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors pointer-events-none" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center relative">
+                    <ShoppingCart size={20} />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-purple-700">
+                      {cart.reduce((a, b) => a + b.quantity, 0)}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-bold text-purple-200">Total Pesanan</p>
+                    <p className="text-sm font-black">{formatCurrency(totalPrice)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 font-black text-sm">
+                  Lanjut Bayar <ArrowRight size={16} />
+                </div>
+             </button>
+          )}
         </div>
-      )}
+      </div>
 
       <BottomNav />
     </div>
