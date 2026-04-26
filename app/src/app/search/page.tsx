@@ -3,7 +3,6 @@ import { BottomNav } from '@/components/layout/BottomNav'
 
 export const dynamic = 'force-dynamic'
 import { VendorCard } from '@/components/vendors/VendorCard'
-import { Vendor } from '@/lib/types'
 import { Search } from 'lucide-react'
 import { getPublicVendors } from '@/app/actions/vendors'
 

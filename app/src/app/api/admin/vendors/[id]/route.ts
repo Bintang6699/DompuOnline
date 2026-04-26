@@ -30,7 +30,7 @@ export async function GET(
     if (!data) return NextResponse.json({ error: 'Vendor tidak ditemukan' }, { status: 404 })
 
     return NextResponse.json({ vendor: data })
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error('GET /api/admin/vendors/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -50,7 +50,7 @@ export async function PATCH(
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error('PATCH /api/admin/vendors/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
@@ -69,7 +69,7 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error('DELETE /api/admin/vendors/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
