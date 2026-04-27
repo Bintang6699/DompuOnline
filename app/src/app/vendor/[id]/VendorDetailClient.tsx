@@ -29,7 +29,7 @@ interface Props {
   params: Promise<{ id: string }>
 }
 
-export default function VendorDetailPage({ params }: Props) {
+export default function VendorDetailClient({ params }: Props) {
   const router = useRouter()
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [loading, setLoading] = useState(true)
@@ -605,10 +605,10 @@ export default function VendorDetailPage({ params }: Props) {
               phone={vendor.phone}
               vendorName={vendor.name}
               isTransport={vendor.categories?.slug === 'transport'}
-              className="w-full bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white font-black text-sm py-3.5 rounded-[20px] flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all uppercase tracking-widest"
+              className="w-full bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white font-black text-xs py-3 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all uppercase tracking-wider mx-auto max-w-[80%]"
             >
-              <MessageCircle size={20} className="drop-shadow-md" />
-              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact via WhatsApp'}
+              <MessageCircle size={18} className="drop-shadow-sm" />
+              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact WhatsApp'}
             </WhatsAppCTA>
           ) : (
              <button

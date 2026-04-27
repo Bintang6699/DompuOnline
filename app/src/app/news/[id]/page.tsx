@@ -1,3 +1,4 @@
+import { Metadata, ResolvingMetadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { createAdminClient } from '@/lib/supabase'
@@ -20,6 +21,53 @@ interface NewsItem {
 
 interface Props {
   params: Promise<{ id: string }>
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { id } = await params
+
+  const adminSupabase = createAdminClient()
+  const { data: news } = await adminSupabase
+    .from('news')
+    .select('title, content, media(id, type, url)')
+    .eq('id', id)
+    .single()
+
+  if (!news) {
+    return {
+      title: 'Berita Tidak Ditemukan',
+    }
+  }
+
+  const images = news.media?.filter((m: any) => m.type === 'image') || []
+  const ogImage = images.length > 0 ? images[0].url : '/logo/logo2.png'
+
+  return {
+    title: news.title,
+    description: news.content?.slice(0, 160) || 'Baca selengkapnya di DompuOnline.',
+    openGraph: {
+      title: news.title,
+      description: news.content?.slice(0, 160) || 'Baca selengkapnya di DompuOnline.',
+      images: [
+        {
+          url: ogImage,
+          width: 800,
+          height: 600,
+          alt: news.title,
+        },
+      ],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: news.title,
+      description: news.content?.slice(0, 160) || 'Baca selengkapnya di DompuOnline.',
+      images: [ogImage],
+    },
+  }
 }
 
 export default async function NewsDetailPage({ params }: Props) {
@@ -90,8 +138,8 @@ export default async function NewsDetailPage({ params }: Props) {
 
           {/* Primary Media */}
           {images.length > 0 && (
-            <div className="relative aspect-[4/3] rounded-[32px] overflow-hidden mb-8 shadow-2xl shadow-purple-900/10">
-              <Image src={images[0].url} alt={typedNews.title} fill className="object-cover" />
+            <div className="rounded-[32px] overflow-hidden mb-8 shadow-2xl shadow-purple-900/10 bg-gray-50 border border-gray-100">
+              <img src={images[0].url} alt={typedNews.title} className="w-full h-auto block" />
             </div>
           )}
 
