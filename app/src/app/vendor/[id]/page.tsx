@@ -126,17 +126,30 @@ export default function VendorDetailPage({ params }: Props) {
 
   const handleLike = async () => {
     if (!vendor || isLiked) return
+
+    // Optimistic UI update
+    setLikes(prev => prev + 1)
+    setIsLiked(true)
+    const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+    localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+
     try {
       const res = await fetch(`/api/vendors/${vendor.id}/like`, { method: 'POST' })
       if (res.ok) {
         const data = await res.json()
         setLikes(data.likes_count)
-        setIsLiked(true)
-        const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
-        localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+      } else {
+        // Revert on error
+        setLikes(prev => prev - 1)
+        setIsLiked(false)
+        localStorage.setItem('liked_vendors', JSON.stringify(likedVendors.filter((id: string) => id !== vendor.id)))
       }
     } catch (err) {
       console.error('Error liking vendor:', err)
+      // Revert on error
+      setLikes(prev => prev - 1)
+      setIsLiked(false)
+      localStorage.setItem('liked_vendors', JSON.stringify(likedVendors.filter((id: string) => id !== vendor.id)))
     }
   }
 
@@ -526,30 +539,6 @@ export default function VendorDetailPage({ params }: Props) {
       {/* Cart Summary Bar & Checkout Modal */}
       {cart.length > 0 && (
         <>
-          <div className="fixed bottom-24 left-0 right-0 px-4 z-50 animate-in slide-in-from-bottom-5 duration-300">
-             <button 
-               onClick={() => setShowCart(true)}
-               className="max-w-lg mx-auto w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-2xl p-4 shadow-xl flex items-center justify-between group overflow-hidden relative"
-             >
-                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors pointer-events-none" />
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center relative">
-                    <ShoppingCart size={20} />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-purple-700">
-                      {cart.reduce((a, b) => a + b.quantity, 0)}
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs font-bold text-purple-200">Total Pesanan</p>
-                    <p className="text-sm font-black whitespace-nowrap">{formatCurrency(totalPrice)}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 font-black text-sm">
-                  Lanjut Bayar <ArrowRight size={16} />
-                </div>
-             </button>
-          </div>
-
           {showCart && (
             <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm">
                <div className="bg-white rounded-t-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300">

@@ -30,17 +30,29 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
 
     if (isLiked) return
 
+    // Optimistic UI update
+    setLikes(prev => prev + 1)
+    setIsLiked(true)
+    const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
+    localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+
     try {
       const res = await fetch(`/api/vendors/${vendor.id}/like`, { method: 'POST' })
       if (res.ok) {
         const data = await res.json()
         setLikes(data.likes_count)
-        setIsLiked(true)
-        const likedVendors = JSON.parse(localStorage.getItem('liked_vendors') || '[]')
-        localStorage.setItem('liked_vendors', JSON.stringify([...likedVendors, vendor.id]))
+      } else {
+        // Revert on error
+        setLikes(prev => prev - 1)
+        setIsLiked(false)
+        localStorage.setItem('liked_vendors', JSON.stringify(likedVendors.filter((id: string) => id !== vendor.id)))
       }
     } catch (err) {
       console.error('Error liking vendor:', err)
+      // Revert on error
+      setLikes(prev => prev - 1)
+      setIsLiked(false)
+      localStorage.setItem('liked_vendors', JSON.stringify(likedVendors.filter((id: string) => id !== vendor.id)))
     }
   }
 
