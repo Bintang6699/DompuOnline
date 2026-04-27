@@ -69,7 +69,7 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
             src={coverImage}
             alt={vendor.name}
             fill
-            className="object-contain p-2"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
