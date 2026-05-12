@@ -102,16 +102,16 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
         <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
           <button
             onClick={handleLike}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all ${
               isLiked
-              ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-105'
-              : 'bg-black/40 text-white hover:bg-black/60'
+              ? 'bg-red-500 text-white shadow-sm scale-105'
+              : 'bg-black/60 text-white hover:bg-black/80'
             }`}
           >
             <Heart size={12} className={isLiked ? 'fill-current' : ''} />
             <span className="text-[10px] font-black">{likes}</span>
           </button>
-          <span className="bg-black/40 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
+          <span className="bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
             {vendor.categories?.name || 'Bisnis'}
           </span>
           {vendor.is_cod && (

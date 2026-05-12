@@ -53,7 +53,7 @@ export default function MitraPage() {
       
       <main className="max-w-lg mx-auto">
         {/* Category Header */}
-        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 p-4 shadow-sm">
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-100 p-4 shadow-sm relative isolate">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Pilih Kategori</p>
           
           {/* Scrollable Category Filter */}

@@ -143,7 +143,7 @@ export default async function HomePage() {
           </section>
 
           <div className="relative z-20 mx-5 mt-10 p-[1.5px] bg-gradient-to-br from-white/30 to-white/5 rounded-[32px] overflow-hidden shadow-2xl">
-            <div className="bg-white/95 backdrop-blur-2xl rounded-[30.5px] px-2 py-6 grid grid-cols-3 divide-x divide-purple-100">
+            <div className="bg-white rounded-[30.5px] px-2 py-6 grid grid-cols-3 divide-x divide-purple-100">
               {[
                 { icon: <Shield size={20} className="text-blue-500" />, value: '100%', label: 'Terverifikasi' },
                 { icon: <TrendingUp size={20} className="text-green-500" />, value: 'Daily', label: 'Update' },
