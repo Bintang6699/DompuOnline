@@ -14,6 +14,10 @@ function normalizePhone(phone: string): string {
 export async function POST(request: Request) {
   const supabase = createAdminClient()
 
+  // ── Get IP ──
+  const forwarded = request.headers.get('x-forwarded-for')
+  const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown'
+
   let body: any
   try {
     body = await request.json()
@@ -21,7 +25,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { formData } = body
+  const { formData, honeypot } = body
+
+  // ── Honeypot check (Blocks dumb bots) ──
+  if (honeypot && honeypot.trim() !== '') {
+    // Silently reject bots without revealing detection
+    return NextResponse.json(
+      { success: true, vendor_id: 'bot-rejected', message: 'Pendaftaran berhasil dikirim.' },
+      { status: 200 }
+    )
+  }
 
   // ── Required fields ──
   if (!formData?.name || !formData?.phone || !formData?.description) {
@@ -29,6 +42,28 @@ export async function POST(request: Request) {
   }
 
   try {
+    // ── Simple Rate Limiting (max 3 per IP per hour) ──
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    const { count: recentCount } = await supabase
+      .from('vendors')
+      .select('id', { count: 'exact', head: true })
+      .eq('ip_address', ip)
+      .gt('created_at', oneHourAgo)
+
+    if ((recentCount || 0) >= 3) {
+      return NextResponse.json(
+        {
+          error: 'rate_limited',
+          message: 'Terlalu banyak permintaan dari IP Anda.',
+          spam_detected: true,
+          block_reasons: ['Terlalu banyak percobaan pendaftaran dari IP yang sama.'],
+          similar_vendors: [],
+          security_flag: 'rate_limit'
+        },
+        { status: 429 }
+      )
+    }
+
     // ── WhatsApp uniqueness check ──
     const normalizedInputPhone = normalizePhone(formData.phone)
     
@@ -91,6 +126,7 @@ export async function POST(request: Request) {
       is_cod: formData.is_cod || false,
       status: 'pending',
       subscription_status: 'pending',
+      ip_address: ip, // Save IP for rate limiting
     })
 
     if (vendorError) throw vendorError
