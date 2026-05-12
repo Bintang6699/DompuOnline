@@ -277,10 +277,17 @@ export default function DaftarPage() {
       })
       const data = await res.json()
 
-      if (!res.ok || data.spam_detected || data.error === 'phone_duplicate') {
+      if (data.spam_detected || data.error === 'phone_duplicate' || data.error === 'rate_limited') {
         setScanning(false)
         setSpamData(data)
         setSpamDetected(true)
+        return
+      }
+
+      if (!res.ok) {
+        setScanning(false)
+        setErrors({ submit: data.message || 'Terjadi kesalahan saat menyimpan data. Coba lagi.' })
+        setCurrentStep(1)
         return
       }
 

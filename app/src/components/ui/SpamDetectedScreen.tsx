@@ -31,12 +31,21 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
   for (const reason of reasons) {
     const r = reason.toLowerCase()
 
-    if (r.includes('whatsapp') || r.includes('nomor') || r.includes('phone')) {
+    if ((r.includes('whatsapp') || r.includes('wa')) && r.includes('tidak terdaftar')) {
       guidance.push({
         icon: <Phone size={15} />,
-        field: 'Nomor WhatsApp',
+        field: 'Validasi WhatsApp',
+        problem: 'Sistem mendeteksi bahwa nomor ini tidak aktif atau tidak terdaftar di jaringan WhatsApp.',
+        solution: 'Pastikan kamu memasukkan nomor WhatsApp yang benar-benar aktif dan bisa dihubungi. Format: 08xx atau 628xx.',
+        severity: 'high',
+        labelText: 'Wajib Diperbaiki',
+      })
+    } else if (r.includes('whatsapp') || r.includes('wa')) {
+      guidance.push({
+        icon: <Phone size={15} />,
+        field: 'Nomor WhatsApp Ganda',
         problem: 'Nomor WhatsApp yang kamu masukkan sudah terdaftar di sistem kami.',
-        solution: 'Gunakan nomor WhatsApp yang berbeda dan aktif. Setiap bisnis hanya boleh mendaftar dengan 1 nomor WA yang unik.',
+        solution: 'Gunakan nomor WhatsApp lain yang belum pernah didaftarkan. Satu nomor hanya berlaku untuk satu mitra.',
         severity: 'high',
         labelText: 'Wajib Diperbaiki',
       })

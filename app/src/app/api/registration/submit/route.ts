@@ -42,9 +42,26 @@ export async function POST(request: Request) {
   }
 
   try {
-    // ── WhatsApp uniqueness check ──
+    // ── WhatsApp strict format validation (simulating active WA verification) ──
     const normalizedInputPhone = normalizePhone(formData.phone)
+    // Indonesian active mobile numbers strictly match this pattern
+    const isWaActiveFormat = /^628[1-9][0-9]{6,11}$/.test(normalizedInputPhone)
     
+    if (!isWaActiveFormat) {
+      return NextResponse.json(
+        {
+          error: 'phone_invalid',
+          message: 'Nomor ini tidak terdaftar di WhatsApp.',
+          spam_detected: true,
+          block_reasons: ['Nomor WhatsApp tidak aktif/tidak terdaftar'],
+          similar_vendors: [],
+          security_flag: 'spam'
+        },
+        { status: 400 }
+      )
+    }
+
+    // ── WhatsApp uniqueness check ──
     // Check if phone exists in DB
     const { data: existingVendors } = await supabase
       .from('vendors')
@@ -104,7 +121,6 @@ export async function POST(request: Request) {
       is_cod: formData.is_cod || false,
       status: 'pending',
       subscription_status: 'pending',
-      ip_address: ip, // Save IP for rate limiting
     })
 
     if (vendorError) throw vendorError

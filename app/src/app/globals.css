@@ -81,12 +81,10 @@
   font-family: var(--font-poppins);
 }
 
-/* Glass morphism */
+/* Glass morphism - Simplified to prevent Android WebView rendering artifacts */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Category icon animations */

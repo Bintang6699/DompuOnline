@@ -25,7 +25,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm relative isolate">
       <div className="max-w-lg mx-auto px-4 py-3">
         {/* Top row */}
         <div className="flex items-center justify-between mb-3">
