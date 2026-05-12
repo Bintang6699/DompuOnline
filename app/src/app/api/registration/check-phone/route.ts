@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
-import { normalizePhone } from '@/lib/spam-detection'
+
+function normalizePhone(phone: string): string {
+  if (!phone) return ''
+  let cleaned = phone.replace(/\D/g, '')
+  if (cleaned.startsWith('0')) {
+    cleaned = '62' + cleaned.slice(1)
+  }
+  return cleaned
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
