@@ -20,6 +20,7 @@ const navItems = [
   { href: '/admin/news', label: 'Berita', icon: Newspaper },
   { href: '/admin/community', label: 'Komunitas', icon: Users },
   { href: '/admin/contact', label: 'Kontak Admin', icon: Phone },
+  { href: '/admin/security', label: 'Pusat Keamanan', icon: Shield },
   { href: '/admin/settings', label: 'Pengaturan', icon: Settings },
 ]
 

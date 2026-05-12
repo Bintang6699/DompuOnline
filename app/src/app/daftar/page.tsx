@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,11 +10,34 @@ import { Input, Textarea, Select } from '@/components/ui/input'
 import { supabase } from '@/lib/supabase'
 import { VendorFormData, SubscriptionPlan } from '@/lib/types'
 import { getSubscriptionPrice, getSubscriptionLabel, formatCurrency } from '@/lib/utils'
+import { SecurityLoadingScreen } from '@/components/ui/SecurityLoadingScreen'
+import { RegistrationSuccess } from '@/components/ui/RegistrationSuccess'
+import { SpamDetectedScreen } from '@/components/ui/SpamDetectedScreen'
 import {
   CheckCircle, Upload, ArrowRight, ArrowLeft, MapPin,
-  Phone, Store, Package, Crown, Sparkles, X, Plus, ShieldAlert, BookOpen, MessageCircle,
-  Truck
+  Phone, Store, Package, Crown, X, Plus, ShieldAlert, BookOpen, MessageCircle,
+  Truck, Shield
 } from 'lucide-react'
+
+// Lightweight device fingerprint (no external dep)
+function generateFingerprint(): string {
+  const nav = navigator
+  const raw = [
+    nav.language,
+    nav.platform,
+    nav.hardwareConcurrency,
+    screen.width,
+    screen.height,
+    screen.colorDepth,
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    nav.userAgent.slice(0, 80),
+  ].join('|')
+  let hash = 0
+  for (let i = 0; i < raw.length; i++) {
+    hash = Math.imul(31, hash) + raw.charCodeAt(i) | 0
+  }
+  return 'fp_' + Math.abs(hash).toString(16)
+}
 
 const CATEGORIES = [
   { value: 'transport', label: '🏍️ Transport (Ojek/Mobil)' },
@@ -55,8 +78,16 @@ export default function DaftarPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [scanning, setScanning] = useState(false)  // security loading screen
   const [success, setSuccess] = useState(false)
+  const [spamDetected, setSpamDetected] = useState(false)
+  const [spamData, setSpamData] = useState<any>(null)
+  const [adminSettings, setAdminSettings] = useState<any>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [phoneChecking, setPhoneChecking] = useState(false)
+  const [phoneAvailable, setPhoneAvailable] = useState<boolean | null>(null)
+  const fingerprintRef = useRef<string>('')
+  const honeypotRef = useRef<string>('')  // stays empty for real users
   const [thumbnail, setThumbnail] = useState<File | null>(null)
   const [video, setVideo] = useState<File | null>(null)
   const [gallery, setGallery] = useState<File[]>([])
@@ -68,11 +99,6 @@ export default function DaftarPage() {
   const [servicesList, setServicesList] = useState([{ title: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [enableFreeTrial, setEnableFreeTrial] = useState(false)
   const [hashtagInput, setHashtagInput] = useState('')
-
-  useEffect(() => {
-    getSettings().then(res => setEnableFreeTrial(!!res.enableFreeTrial)).catch(console.error)
-  }, [])
-
   const [formData, setFormData] = useState<VendorFormData>({
     name: '',
     owner_name: '',
@@ -92,6 +118,32 @@ export default function DaftarPage() {
     job_requirements: '',
     plan: '1_month',
   })
+
+  useEffect(() => {
+    getSettings().then(res => {
+      setEnableFreeTrial(!!res.enableFreeTrial)
+      setAdminSettings(res)
+    }).catch(console.error)
+    if (typeof window !== 'undefined') {
+      fingerprintRef.current = generateFingerprint()
+    }
+  }, [])
+
+  // Real-time phone uniqueness check (debounced 700ms)
+  useEffect(() => {
+    const phone = formData.phone
+    if (!phone || phone.length < 8) { setPhoneAvailable(null); return }
+    setPhoneChecking(true)
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/registration/check-phone?phone=${encodeURIComponent(phone)}`)
+        const json = await res.json()
+        setPhoneAvailable(json.available)
+      } catch { setPhoneAvailable(null) }
+      setPhoneChecking(false)
+    }, 700)
+    return () => clearTimeout(t)
+  }, [formData.phone])
 
   const updateField = (field: keyof VendorFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -199,187 +251,99 @@ export default function DaftarPage() {
 
   const handleSubmit = async () => {
     if (!validateStep(4)) return
-    setLoading(true)
+    // Block if phone already taken
+    if (phoneAvailable === false) {
+      setErrors({ phone: 'Nomor WhatsApp ini sudah terdaftar.' })
+      setCurrentStep(1)
+      return
+    }
 
+    // Show security loading screen
+    setScanning(true)
+  }
+
+  // Called when security animation completes
+  const handleScanComplete = async () => {
     try {
-      // Get category ID from slug
-      const { data: catData } = await supabase
-        .from('categories')
-        .select('id')
-        .eq('slug', formData.category_id)
-        .single()
+      // Step 1: Submit via secure API (handles spam check + vendor insert)
+      const res = await fetch('/api/registration/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formData,
+          fingerprint_id: fingerprintRef.current,
+          honeypot: honeypotRef.current,
+        }),
+      })
+      const data = await res.json()
 
-      const categoryId = catData?.id || null
-
-      const vendorId = crypto.randomUUID()
-
-      let finalDescription = formData.description
-      if (formData.category_id === 'transport') {
-        const vType = formData.vehicle_type === 'mobil' ? '🚗 Mobil' : '🏍️ Motor'
-        const vMerk = formData.transport_merk || '-'
-        const vPlate = formData.transport_plate || '-'
-        const vYear = formData.transport_year ? `(${formData.transport_year})` : ''
-        const vArea = formData.service_area || '-'
-        
-        finalDescription = `📍 Area Operasi: ${vArea}\n${vType}: ${vMerk} ${vYear}\n🏁 Plat Nomor: ${vPlate}\n\n${formData.description}`
+      if (!res.ok || data.spam_detected || data.error === 'phone_duplicate') {
+        setScanning(false)
+        setSpamData(data)
+        setSpamDetected(true)
+        return
       }
 
-      // Insert vendor without .select() because RLS blocks fetching pending vendors
-      const { error: vendorError } = await supabase
-        .from('vendors')
-        .insert({
-          id: vendorId,
-          name: formData.name,
-          owner_name: formData.owner_name,
-          phone: formData.phone,
-          category_id: categoryId,
-          description: finalDescription,
-          maps_link: formData.maps_link || null,
-          latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-          longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-          address_detail: formData.address_detail || null,
-          hashtags: formData.hashtags || [],
-          is_cod: formData.is_cod || false,
-          status: 'pending',
-          subscription_status: 'pending',
-        })
+      const vendorId = data.vendor_id
 
-      if (vendorError) throw vendorError
-
-      // Helper func to upload media
-      const uploadMedia = async (file: File, type: string, indexType: string) => {
+      // Step 2: Upload media files using the vendor_id returned
+      const uploadMedia = async (file: File, indexType: string) => {
         const ext = file.name.split('.').pop()
         const path = `vendors/${vendorId}/${indexType}_${Date.now()}.${ext}`
         const { data: uploaded } = await supabase.storage.from('media').upload(path, file, { cacheControl: '3600' })
         if (uploaded) {
           const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
-          if (type === 'media_table') {
-            await supabase.from('media').insert({ vendor_id: vendorId, type: indexType.startsWith('vid') ? 'video' : 'image', url: urlData.publicUrl })
-          }
+          await supabase.from('media').insert({ vendor_id: vendorId, type: indexType.startsWith('vid') ? 'video' : 'image', url: urlData.publicUrl })
           return urlData.publicUrl
         }
         return null
       }
 
-      if (thumbnail) await uploadMedia(thumbnail, 'media_table', 'thumb')
-      if (video) await uploadMedia(video, 'media_table', 'video')
-      for (let i = 0; i < gallery.length; i++) {
-        await uploadMedia(gallery[i], 'media_table', `gal_${i}`)
-      }
+      if (thumbnail) await uploadMedia(thumbnail, 'thumb')
+      if (video) await uploadMedia(video, 'video')
+      for (let i = 0; i < gallery.length; i++) await uploadMedia(gallery[i], `gal_${i}`)
 
-      // Insert category-specific data
-      if (formData.category_id === 'food' && menus.some((m) => m.name)) {
-        const validMenus = menus.filter((m) => m.name.trim())
-        const menuRecords = []
-        for (const m of validMenus) {
-          let imageUrl = null
-          if (m.image) {
-            imageUrl = await uploadMedia(m.image, 'product_image', `menu_${Date.now()}_${Math.random().toString(36).substring(7)}`)
+      // Upload item images
+      if (formData.category_id === 'food') {
+        for (const m of menus.filter(m => m.name && m.image)) {
+          const ext = m.image!.name.split('.').pop()
+          const path = `vendors/${vendorId}/menu_${Date.now()}.${ext}`
+          const { data: up } = await supabase.storage.from('media').upload(path, m.image!, { cacheControl: '3600' })
+          if (up) {
+            const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+            await supabase.from('products').update({ image_url: urlData.publicUrl }).eq('vendor_id', vendorId).eq('name', m.name)
           }
-          menuRecords.push({
-            vendor_id: vendorId,
-            name: m.name,
-            price: parseFloat(m.price.replace(/\D/g, '')) || 0,
-            description: m.description || null,
-            image_url: imageUrl
-          })
         }
-        await supabase.from('products').insert(menuRecords)
       }
 
-      if (formData.category_id === 'shopping' && productsList.some((p) => p.name)) {
-        const validProducts = productsList.filter((p) => p.name.trim())
-        const productRecords = []
-        for (const p of validProducts) {
-          let imageUrl = null
-          if (p.image) {
-            imageUrl = await uploadMedia(p.image, 'product_image', `prod_${Date.now()}_${Math.random().toString(36).substring(7)}`)
-          }
-          productRecords.push({
-            vendor_id: vendorId,
-            name: p.name,
-            price: parseFloat(p.price.replace(/\D/g, '')) || 0,
-            description: p.description || null,
-            image_url: imageUrl
-          })
-        }
-        await supabase.from('products').insert(productRecords)
-      }
-
-      if (formData.category_id === 'services' && servicesList.some((s) => s.title)) {
-        const validServices = servicesList.filter((s) => s.title.trim())
-        await supabase.from('services').insert(
-          validServices.map((s) => ({
-            vendor_id: vendorId,
-            title: s.title,
-            price: parseFloat(s.price.replace(/\D/g, '')) || null,
-            description: s.description || null,
-          }))
-        )
-      }
-
-      if (formData.category_id === 'transport' && formData.transport_base_price) {
-        await supabase.from('services').insert({
-          vendor_id: vendorId,
-          title: `Tarif Dasar Mulai Dari`,
-          price: parseFloat(formData.transport_base_price.replace(/\D/g, '')) || 0,
-          description: 'Harga detail akan disepakati langsung via WhatsApp (Tergantung Jarak / Tujuan).'
-        })
-      }
-
-
-
-      // Insert subscription record
-      await supabase.from('subscriptions').insert({
-        vendor_id: vendorId,
-        plan: formData.plan || '1_month',
-        status: 'pending',
-        amount_paid: getSubscriptionPrice(formData.plan || '1_month'),
-      })
-
+      setScanning(false)
       setSuccess(true)
     } catch (err: any) {
       console.error('Registration Error:', err)
-      const errorMessage = err?.message || 'Terjadi kesalahan. Coba lagi.'
-      setErrors({ submit: errorMessage })
-    } finally {
-      setLoading(false)
+      setScanning(false)
+      setErrors({ submit: err?.message || 'Terjadi kesalahan. Coba lagi.' })
     }
   }
 
+  // ── Screen states ──
+  if (scanning) {
+    return <SecurityLoadingScreen duration={5500} onComplete={handleScanComplete} />
+  }
+
   if (success) {
+    return <RegistrationSuccess />
+  }
+
+  if (spamDetected) {
     return (
-      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center p-4">
-        <div className="max-w-sm w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <CheckCircle size={40} className="text-green-500" />
-          </div>
-          <h1 className="text-2xl font-black text-gray-900 mb-2">Pendaftaran Berhasil! 🎉</h1>
-          <p className="text-gray-500 mb-6 text-sm leading-relaxed">
-            Terima kasih telah mendaftar sebagai mitra DompuOnline! Tim kami akan meninjau pendaftaranmu
-            dalam 1–2 hari kerja dan menghubungi via WhatsApp.
-          </p>
-          <div className="bg-purple-50 rounded-2xl p-4 mb-6 text-left">
-            <p className="text-sm font-semibold text-purple-800 mb-2">Langkah selanjutnya:</p>
-            <div className="space-y-2">
-              {['Admin akan meninjau data usahamu', 'Tim survei akan mengunjungi lokasi', 'Setelah disetujui, usahamu akan tampil di DompuOnline'].map((step, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <span className="w-5 h-5 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                    {i + 1}
-                  </span>
-                  <p className="text-xs text-gray-600">{step}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <button
-            onClick={() => router.push('/')}
-            className="btn-primary w-full text-white font-bold py-3 rounded-xl"
-          >
-            Kembali ke Beranda
-          </button>
-        </div>
-      </div>
+      <SpamDetectedScreen
+        blockReasons={spamData?.block_reasons || []}
+        similarVendors={spamData?.similar_vendors || []}
+        securityFlag={spamData?.security_flag}
+        adminWhatsapp={adminSettings?.whatsapp}
+        adminEmail={adminSettings?.email}
+        onRetry={() => { setSpamDetected(false); setSpamData(null); setCurrentStep(1) }}
+      />
     )
   }
 
@@ -480,17 +444,31 @@ export default function DaftarPage() {
               error={errors.owner_name}
               required
             />
-            <Input
-              id="phone"
-              label="Nomor WhatsApp"
-              placeholder="08xxxxxxxxxx"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
-              error={errors.phone}
-              hint="Pelanggan akan menghubungi nomor ini langsung"
-              required
-            />
+            <div>
+              <Input
+                id="phone"
+                label="Nomor WhatsApp"
+                placeholder="08xxxxxxxxxx"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => updateField('phone', e.target.value)}
+                error={errors.phone}
+                hint="Pelanggan akan menghubungi nomor ini langsung"
+                required
+              />
+              {phoneChecking && (
+                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                  <span className="inline-block w-3 h-3 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+                  Memeriksa ketersediaan nomor...
+                </p>
+              )}
+              {!phoneChecking && phoneAvailable === false && (
+                <p className="text-xs text-red-500 mt-1">⚠️ Nomor WhatsApp ini sudah terdaftar di sistem kami.</p>
+              )}
+              {!phoneChecking && phoneAvailable === true && formData.phone.length >= 8 && (
+                <p className="text-xs text-green-600 mt-1">✓ Nomor WhatsApp tersedia</p>
+              )}
+            </div>
             <Select
               id="category_id"
               label="Kategori Usaha"
@@ -1010,9 +988,22 @@ export default function DaftarPage() {
               <ArrowRight size={16} />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} loading={loading} className="flex-1">
-              🚀 Kirim Pendaftaran
-            </Button>
+            <>
+              {/* Honeypot — hidden from real users, catches bots */}
+              <input
+                type="text"
+                name="website"
+                autoComplete="off"
+                tabIndex={-1}
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                value={honeypotRef.current}
+                onChange={(e) => { honeypotRef.current = e.target.value }}
+              />
+              <Button onClick={handleSubmit} loading={loading} className="flex-1 flex items-center justify-center gap-2">
+                <Shield size={16} /> Kirim dengan Aman
+              </Button>
+            </>
           )}
         </div>
       </main>
