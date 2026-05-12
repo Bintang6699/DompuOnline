@@ -42,28 +42,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    // ── Simple Rate Limiting (max 3 per IP per hour) ──
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-    const { count: recentCount } = await supabase
-      .from('vendors')
-      .select('id', { count: 'exact', head: true })
-      .eq('ip_address', ip)
-      .gt('created_at', oneHourAgo)
-
-    if ((recentCount || 0) >= 3) {
-      return NextResponse.json(
-        {
-          error: 'rate_limited',
-          message: 'Terlalu banyak permintaan dari IP Anda.',
-          spam_detected: true,
-          block_reasons: ['Terlalu banyak percobaan pendaftaran dari IP yang sama.'],
-          similar_vendors: [],
-          security_flag: 'rate_limit'
-        },
-        { status: 429 }
-      )
-    }
-
     // ── WhatsApp uniqueness check ──
     const normalizedInputPhone = normalizePhone(formData.phone)
     
