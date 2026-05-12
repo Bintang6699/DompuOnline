@@ -14,7 +14,7 @@ const SCAN_MESSAGES = [
 
 interface SecurityLoadingScreenProps {
   onComplete?: () => void
-  duration?: number // ms
+  duration?: number
 }
 
 export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityLoadingScreenProps) {
@@ -22,7 +22,6 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
   const [progress, setProgress] = useState(0)
   const [dots, setDots] = useState('')
 
-  // Cycle through messages
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageIndex((i) => (i + 1) % SCAN_MESSAGES.length)
@@ -30,7 +29,6 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
     return () => clearInterval(interval)
   }, [duration])
 
-  // Progress bar
   useEffect(() => {
     const start = Date.now()
     const frame = requestAnimationFrame(function tick() {
@@ -46,7 +44,6 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
     return () => cancelAnimationFrame(frame)
   }, [duration, onComplete])
 
-  // Animated dots
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((d) => (d.length >= 3 ? '' : d + '.'))
@@ -54,153 +51,136 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
     return () => clearInterval(interval)
   }, [])
 
+  const chips = [
+    { label: 'Enkripsi Aktif', done: progress > 15 },
+    { label: 'IP Terverifikasi', done: progress > 35 },
+    { label: 'Sidik Jari', done: progress > 55 },
+    { label: 'Anti-Duplikat', done: progress > 75 },
+  ]
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'radial-gradient(ellipse at 50% 40%, #1a0533 0%, #0a0010 60%, #000 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Animated grid background */}
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: '#f8f7ff',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      overflow: 'hidden',
+    }}>
+      {/* Subtle grid background */}
       <div style={{
-        position: 'absolute', inset: 0, opacity: 0.07,
-        backgroundImage: 'linear-gradient(#9333ea 1px, transparent 1px), linear-gradient(90deg, #9333ea 1px, transparent 1px)',
+        position: 'absolute', inset: 0, opacity: 0.04,
+        backgroundImage: 'linear-gradient(#7c3aed 1px, transparent 1px), linear-gradient(90deg, #7c3aed 1px, transparent 1px)',
         backgroundSize: '40px 40px',
-        animation: 'gridMove 8s linear infinite',
+        animation: 'gridMove 10s linear infinite',
       }} />
 
-      {/* Outer glow rings */}
+      {/* Soft purple glow blobs */}
       <div style={{
-        position: 'absolute',
-        width: 400, height: 400,
-        borderRadius: '50%',
-        border: '1px solid rgba(147,51,234,0.15)',
+        position: 'absolute', top: '-10%', left: '-10%',
+        width: 400, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(147,51,234,0.08) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-10%', right: '-10%',
+        width: 400, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Pulse rings */}
+      <div style={{
+        position: 'absolute', width: 340, height: 340, borderRadius: '50%',
+        border: '1px solid rgba(147,51,234,0.12)',
         animation: 'pulse 3s ease-in-out infinite',
       }} />
       <div style={{
-        position: 'absolute',
-        width: 500, height: 500,
-        borderRadius: '50%',
-        border: '1px solid rgba(147,51,234,0.08)',
-        animation: 'pulse 3s ease-in-out infinite 0.5s',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: 600, height: 600,
-        borderRadius: '50%',
-        border: '1px solid rgba(147,51,234,0.05)',
-        animation: 'pulse 3s ease-in-out infinite 1s',
+        position: 'absolute', width: 460, height: 460, borderRadius: '50%',
+        border: '1px solid rgba(147,51,234,0.06)',
+        animation: 'pulse 3s ease-in-out infinite 0.6s',
       }} />
 
-      {/* Main glass card */}
+      {/* Main card */}
       <div style={{
-        position: 'relative',
-        zIndex: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 0,
-        padding: '48px 40px 40px',
-        maxWidth: 440,
-        width: '90vw',
+        position: 'relative', zIndex: 10,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        padding: '44px 36px 36px',
+        maxWidth: 420, width: '90vw',
         borderRadius: 28,
-        background: 'rgba(255,255,255,0.04)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        border: '1px solid rgba(147,51,234,0.25)',
-        boxShadow: '0 0 80px rgba(147,51,234,0.18), inset 0 1px 0 rgba(255,255,255,0.08)',
+        background: '#fff',
+        border: '1px solid rgba(147,51,234,0.15)',
+        boxShadow: '0 8px 48px rgba(147,51,234,0.12), 0 2px 8px rgba(0,0,0,0.06)',
       }}>
         {/* Eye Video */}
         <div style={{
           position: 'relative',
-          width: 160, height: 160,
+          width: 152, height: 152,
           borderRadius: '50%',
           overflow: 'hidden',
-          marginBottom: 32,
-          boxShadow: '0 0 60px rgba(147,51,234,0.5), 0 0 120px rgba(147,51,234,0.2)',
-          border: '2px solid rgba(147,51,234,0.4)',
+          marginBottom: 28,
+          boxShadow: '0 0 0 6px rgba(147,51,234,0.08), 0 0 40px rgba(147,51,234,0.2)',
+          border: '2px solid rgba(147,51,234,0.25)',
         }}>
           <video
             src="/animationLogo/eyes.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'hue-rotate(260deg) saturate(1.5)' }}
+            autoPlay loop muted playsInline
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          {/* Scanning line overlay */}
+          {/* Scan line */}
           <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(transparent 40%, rgba(147,51,234,0.15) 50%, transparent 60%)',
-            animation: 'scanLine 2s ease-in-out infinite',
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(transparent 35%, rgba(147,51,234,0.12) 50%, transparent 65%)',
+            animation: 'scanLine 2.2s ease-in-out infinite',
           }} />
         </div>
 
-        {/* Title */}
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <p style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: 4, textTransform: 'uppercase',
-            color: 'rgba(147,51,234,0.8)', marginBottom: 8,
-          }}>
-            DOMPU ONLINE SECURITY SYSTEM
-          </p>
-          <h2 style={{
-            fontSize: 20, fontWeight: 800,
-            color: '#fff', lineHeight: 1.3, margin: 0,
-          }}>
-            Memproses Data Anda
-          </h2>
-        </div>
+        {/* Label */}
+        <p style={{
+          fontSize: 9, fontWeight: 800, letterSpacing: 3.5, textTransform: 'uppercase',
+          color: '#9333ea', marginBottom: 8, textAlign: 'center',
+        }}>
+          DOMPU ONLINE SECURITY SYSTEM
+        </p>
+        <h2 style={{
+          fontSize: 20, fontWeight: 800, color: '#1e1040',
+          lineHeight: 1.3, margin: '0 0 20px', textAlign: 'center',
+        }}>
+          Memproses Data Anda
+        </h2>
 
-        {/* Scanning message */}
+        {/* Scanning message box */}
         <div style={{
-          marginTop: 20, marginBottom: 28,
-          minHeight: 40, textAlign: 'center',
-          padding: '10px 16px',
-          borderRadius: 12,
-          background: 'rgba(147,51,234,0.08)',
-          border: '1px solid rgba(147,51,234,0.15)',
-          width: '100%',
+          width: '100%', marginBottom: 24,
+          padding: '10px 14px', borderRadius: 12,
+          background: 'rgba(147,51,234,0.05)',
+          border: '1px solid rgba(147,51,234,0.12)',
+          minHeight: 44,
         }}>
           <p style={{
-            fontSize: 12, color: 'rgba(200,150,255,0.9)', fontFamily: 'monospace',
-            lineHeight: 1.5, margin: 0,
+            fontSize: 12, color: '#7c3aed', fontFamily: 'monospace',
+            lineHeight: 1.5, margin: 0, textAlign: 'center',
           }}>
-            <span style={{ color: '#a855f7', marginRight: 6 }}>›</span>
+            <span style={{ marginRight: 6, opacity: 0.6 }}>›</span>
             {SCAN_MESSAGES[messageIndex]}{dots}
           </p>
         </div>
 
         {/* Progress bar */}
-        <div style={{ width: '100%', marginBottom: 16 }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', marginBottom: 8,
-          }}>
-            <span style={{ fontSize: 10, color: 'rgba(200,150,255,0.6)', fontFamily: 'monospace' }}>
+        <div style={{ width: '100%', marginBottom: 18 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 7 }}>
+            <span style={{ fontSize: 9, color: '#a78bfa', fontFamily: 'monospace', fontWeight: 700, letterSpacing: 1 }}>
               SECURITY SCAN
             </span>
-            <span style={{ fontSize: 10, color: '#a855f7', fontFamily: 'monospace', fontWeight: 700 }}>
+            <span style={{ fontSize: 9, color: '#7c3aed', fontFamily: 'monospace', fontWeight: 800 }}>
               {Math.round(progress)}%
             </span>
           </div>
-          <div style={{
-            height: 4, borderRadius: 999,
-            background: 'rgba(147,51,234,0.15)',
-            overflow: 'hidden',
-          }}>
+          <div style={{ height: 5, borderRadius: 999, background: 'rgba(147,51,234,0.1)', overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: 999,
               width: `${progress}%`,
               background: 'linear-gradient(90deg, #7c3aed, #a855f7, #c084fc)',
-              boxShadow: '0 0 12px rgba(168,85,247,0.8)',
+              boxShadow: '0 0 10px rgba(168,85,247,0.5)',
               transition: 'width 0.1s linear',
             }} />
           </div>
@@ -208,30 +188,24 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
 
         {/* Status chips */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {[
-            { label: 'Enkripsi Aktif', done: progress > 15 },
-            { label: 'IP Terverifikasi', done: progress > 35 },
-            { label: 'Sidik Jari', done: progress > 55 },
-            { label: 'Anti-Duplikat', done: progress > 75 },
-          ].map(({ label, done }) => (
+          {chips.map(({ label, done }) => (
             <div key={label} style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '4px 10px', borderRadius: 99,
-              background: done ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.08)'}`,
+              background: done ? 'rgba(22,163,74,0.08)' : '#f5f3ff',
+              border: `1px solid ${done ? 'rgba(22,163,74,0.25)' : 'rgba(147,51,234,0.12)'}`,
               transition: 'all 0.4s ease',
             }}>
               <div style={{
                 width: 6, height: 6, borderRadius: '50%',
-                background: done ? '#22c55e' : 'rgba(255,255,255,0.2)',
-                boxShadow: done ? '0 0 6px #22c55e' : 'none',
+                background: done ? '#16a34a' : '#d8b4fe',
+                boxShadow: done ? '0 0 5px rgba(22,163,74,0.5)' : 'none',
                 transition: 'all 0.4s ease',
               }} />
               <span style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: 0.5,
-                color: done ? 'rgba(134,239,172,0.9)' : 'rgba(255,255,255,0.3)',
-                textTransform: 'uppercase',
-                transition: 'color 0.4s ease',
+                color: done ? '#15803d' : '#9333ea',
+                textTransform: 'uppercase', transition: 'color 0.4s ease',
               }}>
                 {label}
               </span>
@@ -242,10 +216,9 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
 
       {/* Bottom tagline */}
       <p style={{
-        position: 'absolute', bottom: 32,
-        fontSize: 10, color: 'rgba(255,255,255,0.2)',
-        letterSpacing: 2, textTransform: 'uppercase',
-        fontFamily: 'monospace',
+        position: 'absolute', bottom: 28,
+        fontSize: 9, color: 'rgba(124,58,237,0.3)',
+        letterSpacing: 2, textTransform: 'uppercase', fontFamily: 'monospace',
       }}>
         Dompu Online · Advanced Security v2.0
       </p>
@@ -253,11 +226,11 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
       <style>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.5; }
+          50% { transform: scale(1.04); opacity: 0.5; }
         }
         @keyframes scanLine {
           0% { transform: translateY(-100%); }
-          100% { transform: translateY(300%); }
+          100% { transform: translateY(350%); }
         }
         @keyframes gridMove {
           0% { transform: translateY(0); }

@@ -1,191 +1,162 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { CheckCircle, Shield, Sparkles } from 'lucide-react'
+import { CheckCircle, Shield, Sparkles, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-interface RegistrationSuccessProps {
-  onBack?: () => void
-}
-
 const NEXT_STEPS = [
-  'Admin akan meninjau data usahamu',
-  'Tim survei akan mengunjungi lokasi',
+  'Admin akan meninjau data usahamu dengan seksama',
+  'Tim survei akan mengunjungi lokasi usahamu',
   'Setelah disetujui, usahamu akan tampil di DompuOnline',
 ]
 
-export function RegistrationSuccess({ onBack }: RegistrationSuccessProps) {
+export function RegistrationSuccess() {
   const router = useRouter()
   const [visible, setVisible] = useState(false)
-  const [showSteps, setShowSteps] = useState(false)
+  const [step, setStep] = useState(0)
 
   useEffect(() => {
-    setTimeout(() => setVisible(true), 100)
-    setTimeout(() => setShowSteps(true), 800)
+    setTimeout(() => setVisible(true), 80)
+    setTimeout(() => setStep(1), 500)
+    setTimeout(() => setStep(2), 800)
+    setTimeout(() => setStep(3), 1100)
   }, [])
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'radial-gradient(ellipse at 50% 0%, #1a0533 0%, #0f0020 40%, #050008 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 24,
-      position: 'relative',
-      overflow: 'hidden',
+      background: '#f8f7ff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '24px 16px',
+      position: 'relative', overflow: 'hidden',
     }}>
-      {/* Background decorations */}
+      {/* Background blobs */}
       <div style={{
-        position: 'absolute', top: '10%', left: '5%',
-        width: 300, height: 300, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%)',
+        position: 'fixed', top: '-10%', right: '-10%',
+        width: 350, height: 350, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
       <div style={{
-        position: 'absolute', bottom: '10%', right: '5%',
-        width: 250, height: 250, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(147,51,234,0.08) 0%, transparent 70%)',
+        position: 'fixed', bottom: '-10%', left: '-10%',
+        width: 300, height: 300, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(147,51,234,0.06) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
       <div style={{
-        maxWidth: 420, width: '100%',
+        maxWidth: 420, width: '100%', position: 'relative', zIndex: 1,
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.97)',
-        transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: visible ? 'translateY(0)' : 'translateY(16px)',
+        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
-        {/* Success icon */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        {/* Icon section */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{
-            width: 100, height: 100,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(34,197,94,0.2) 0%, rgba(34,197,94,0.05) 70%)',
-            border: '2px solid rgba(34,197,94,0.3)',
+            width: 100, height: 100, borderRadius: '50%',
+            background: '#f0fdf4',
+            border: '2px solid #bbf7d0',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 24px',
-            boxShadow: '0 0 60px rgba(34,197,94,0.25)',
-            animation: 'successPulse 2s ease-in-out infinite',
+            margin: '0 auto 20px',
+            boxShadow: '0 0 0 8px rgba(34,197,94,0.06), 0 8px 32px rgba(34,197,94,0.15)',
+            animation: 'successPulse 2.5s ease-in-out infinite',
           }}>
-            <CheckCircle size={48} color="#22c55e" strokeWidth={1.5} />
+            <CheckCircle size={48} color="#16a34a" strokeWidth={1.5} />
           </div>
 
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
+            display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 14px', borderRadius: 99,
-            background: 'rgba(34,197,94,0.12)',
-            border: '1px solid rgba(34,197,94,0.25)',
-            marginBottom: 16,
+            background: '#f0fdf4', border: '1px solid #bbf7d0',
+            marginBottom: 14,
           }}>
-            <Shield size={12} color="#4ade80" />
-            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: '#4ade80', textTransform: 'uppercase' }}>
-              Terverifikasi
+            <Shield size={11} color="#16a34a" />
+            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: '#15803d', textTransform: 'uppercase' }}>
+              Terverifikasi Aman
             </span>
           </div>
 
-          <h1 style={{
-            fontSize: 28, fontWeight: 900, color: '#fff',
-            margin: '0 0 10px', lineHeight: 1.2,
-          }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: '#111827', margin: '0 0 10px', lineHeight: 1.2 }}>
             Pendaftaran Berhasil! 🎉
           </h1>
-          <p style={{
-            fontSize: 14, color: 'rgba(200,200,220,0.7)',
-            lineHeight: 1.7, margin: 0,
-          }}>
-            Data usahamu telah berhasil melewati pemeriksaan sistem keamanan Dompu Online.
-            Tim kami akan meninjau dalam 1–2 hari kerja.
+          <p style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.7, margin: 0 }}>
+            Data usahamu telah melewati pemeriksaan sistem keamanan Dompu Online.
+            Tim kami akan menghubungimu via WhatsApp dalam 1–2 hari kerja.
           </p>
         </div>
 
         {/* Steps card */}
         <div style={{
-          borderRadius: 20,
-          background: 'rgba(255,255,255,0.04)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(147,51,234,0.2)',
-          padding: '24px',
-          marginBottom: 20,
-          opacity: showSteps ? 1 : 0,
-          transform: showSteps ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'all 0.6s ease 0.2s',
+          background: '#fff', borderRadius: 20,
+          border: '1px solid #e5e7eb',
+          padding: 20, marginBottom: 14,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Sparkles size={16} color="#a855f7" />
-            <span style={{ fontSize: 12, fontWeight: 800, color: 'rgba(200,150,255,0.9)', letterSpacing: 0.5 }}>
+            <Sparkles size={15} color="#7c3aed" />
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#374151', letterSpacing: 0.3 }}>
               LANGKAH SELANJUTNYA
             </span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {NEXT_STEPS.map((step, i) => (
+            {NEXT_STEPS.map((s, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 12,
-                opacity: showSteps ? 1 : 0,
-                transform: showSteps ? 'translateX(0)' : 'translateX(-8px)',
-                transition: `all 0.5s ease ${0.3 + i * 0.15}s`,
+                opacity: step > i ? 1 : 0,
+                transform: step > i ? 'translateX(0)' : 'translateX(-8px)',
+                transition: 'all 0.4s ease',
               }}>
                 <div style={{
                   width: 26, height: 26, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                  background: 'linear-gradient(135deg, #7c3aed, #9333ea)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
-                  boxShadow: '0 0 10px rgba(168,85,247,0.4)',
+                  boxShadow: '0 2px 8px rgba(124,58,237,0.3)',
                 }}>
                   <span style={{ fontSize: 11, fontWeight: 900, color: '#fff' }}>{i + 1}</span>
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(220,220,240,0.85)', lineHeight: 1.5, margin: 0 }}>
-                  {step}
+                <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.5, margin: 0, paddingTop: 4 }}>
+                  {s}
                 </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Security badge */}
+        {/* Security note */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
+          display: 'flex', gap: 10, alignItems: 'flex-start',
           padding: '12px 16px',
-          borderRadius: 14,
-          background: 'rgba(34,197,94,0.06)',
-          border: '1px solid rgba(34,197,94,0.15)',
-          marginBottom: 24,
+          borderRadius: 14, background: '#f0fdf4', border: '1px solid #bbf7d0',
+          marginBottom: 20,
         }}>
-          <Shield size={16} color="#22c55e" />
-          <p style={{ fontSize: 11, color: 'rgba(134,239,172,0.8)', margin: 0, lineHeight: 1.4 }}>
-            Data telah dienkripsi dan disimpan dengan aman oleh sistem keamanan Dompu Online.
+          <Shield size={15} color="#16a34a" style={{ flexShrink: 0, marginTop: 1 }} />
+          <p style={{ fontSize: 11, color: '#15803d', margin: 0, lineHeight: 1.5 }}>
+            Data yang kamu kirim telah dienkripsi dan disimpan aman oleh sistem keamanan Dompu Online.
           </p>
         </div>
 
         <button
           onClick={() => router.push('/')}
           style={{
-            width: '100%',
-            padding: '14px 24px',
-            borderRadius: 14,
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-            border: 'none',
-            color: '#fff',
-            fontSize: 15, fontWeight: 800,
+            width: '100%', padding: '14px 24px', borderRadius: 14,
+            background: 'linear-gradient(135deg, #7c3aed, #9333ea)',
+            border: 'none', color: '#fff', fontSize: 15, fontWeight: 800,
             cursor: 'pointer',
-            boxShadow: '0 8px 32px rgba(168,85,247,0.35)',
-            transition: 'all 0.2s ease',
+            boxShadow: '0 6px 24px rgba(124,58,237,0.3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            transition: 'all 0.2s',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-1px)'
-            e.currentTarget.style.boxShadow = '0 12px 40px rgba(168,85,247,0.45)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(168,85,247,0.35)'
-          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(124,58,237,0.4)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(124,58,237,0.3)' }}
         >
-          Kembali ke Beranda
+          Kembali ke Beranda <ArrowRight size={16} />
         </button>
       </div>
 
       <style>{`
         @keyframes successPulse {
-          0%, 100% { box-shadow: 0 0 60px rgba(34,197,94,0.25); }
-          50% { box-shadow: 0 0 80px rgba(34,197,94,0.4); }
+          0%, 100% { box-shadow: 0 0 0 8px rgba(34,197,94,0.06), 0 8px 32px rgba(34,197,94,0.15); }
+          50% { box-shadow: 0 0 0 14px rgba(34,197,94,0.04), 0 8px 40px rgba(34,197,94,0.22); }
         }
       `}</style>
     </div>
