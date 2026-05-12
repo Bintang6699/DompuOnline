@@ -348,42 +348,42 @@ export default function DaftarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="max-w-lg mx-auto px-4 pt-5 pb-28">
+      <main className="max-w-lg mx-auto px-4 pt-5 pb-28 relative z-10 isolate">
         <div className="mb-6">
           <h1 className="text-2xl font-black text-gray-900 mb-1">Daftar Sebagai Mitra</h1>
           <p className="text-sm text-gray-500">Lengkapi data usahamu untuk tampil di DompuOnline</p>
         </div>
 
         {/* Help Section */}
-        <div className="bg-white rounded-3xl p-5 mb-8 shadow-sm border border-purple-100">
+        <div className="bg-white rounded-2xl p-5 mb-8 border border-gray-100 relative z-20">
           <div className="flex gap-3 mb-4">
             <Link href="/panduan" className="flex-1">
-              <div className="bg-purple-50 hover:bg-purple-100 transition-colors rounded-2xl p-4 text-center h-full border border-purple-100/50">
-                <BookOpen className="text-purple-600 mx-auto mb-1.5" size={24} />
-                <span className="text-[10px] font-black text-purple-900 block uppercase tracking-tight">Panduan Pendaftaran</span>
+              <div className="bg-purple-50 hover:bg-purple-100 transition-colors rounded-xl p-4 text-center h-full border border-purple-100">
+                <BookOpen className="text-purple-600 mx-auto mb-2" size={24} />
+                <span className="text-[10px] font-black text-purple-900 block uppercase tracking-wide">Panduan Pendaftaran</span>
               </div>
             </Link>
             <Link href="/contact" className="flex-1">
-              <div className="bg-blue-50 hover:bg-blue-100 transition-colors rounded-2xl p-4 text-center h-full border border-blue-100/50">
-                <MessageCircle className="text-blue-600 mx-auto mb-1.5" size={24} />
-                <span className="text-[10px] font-black text-blue-900 block uppercase tracking-tight">Chat Admin</span>
+              <div className="bg-blue-50 hover:bg-blue-100 transition-colors rounded-xl p-4 text-center h-full border border-blue-100">
+                <MessageCircle className="text-blue-600 mx-auto mb-2" size={24} />
+                <span className="text-[10px] font-black text-blue-900 block uppercase tracking-wide">Chat Admin</span>
               </div>
             </Link>
           </div>
-          <div className="space-y-3 border-t border-purple-50 pt-4">
+          <div className="space-y-3 border-t border-gray-100 pt-4">
             <div className="flex gap-3 text-xs text-gray-500 leading-relaxed">
               <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
-                <BookOpen size={14} className="text-purple-400" />
+                <BookOpen size={14} className="text-purple-500" />
               </div>
-              <p><span className="text-purple-700 font-bold">Panduan:</span> Pelajari langkah-langkah, syarat pendaftaran, serta aturan ketat platform agar tokomu lancar dikelola.</p>
+              <p><span className="text-purple-700 font-bold">Panduan:</span> Pelajari langkah-langkah, syarat pendaftaran, serta aturan platform agar tokomu lancar dikelola.</p>
             </div>
             <div className="flex gap-3 text-xs text-gray-500 leading-relaxed">
               <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                <MessageCircle size={14} className="text-blue-400" />
+                <MessageCircle size={14} className="text-blue-500" />
               </div>
-              <p><span className="text-blue-700 font-bold">Kontak Admin:</span> Gunakan ini jika butuh bantuan teknis saat upload berkas atau ingin konfirmasi pembayaran langganan.</p>
+              <p><span className="text-blue-700 font-bold">Kontak Admin:</span> Gunakan ini jika butuh bantuan teknis saat upload berkas atau ingin konfirmasi langganan.</p>
             </div>
           </div>
         </div>

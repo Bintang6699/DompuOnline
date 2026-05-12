@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react'
 
 const SCAN_MESSAGES = [
-  'Menginisialisasi sistem keamanan Dompu Online...',
+  'Menginisialisasi koneksi aman...',
   'Memverifikasi autentisitas data bisnis...',
-  'Memindai pendaftaran duplikat...',
-  'Menganalisis validasi keamanan...',
+  'Memeriksa nomor WhatsApp...',
+  'Memvalidasi nomor dengan database...',
   'Memeriksa integritas informasi usaha...',
-  'Menjalankan deteksi kemiripan lanjutan...',
-  'Memproses sidik jari perangkat...',
+  'Memastikan data bebas duplikasi...',
+  'Mengamankan proses pendaftaran...',
   'Verifikasi hampir selesai...',
 ]
 
@@ -53,9 +53,9 @@ export function SecurityLoadingScreen({ onComplete, duration = 5000 }: SecurityL
 
   const chips = [
     { label: 'Enkripsi Aktif', done: progress > 15 },
-    { label: 'IP Terverifikasi', done: progress > 35 },
-    { label: 'Sidik Jari', done: progress > 55 },
-    { label: 'Anti-Duplikat', done: progress > 75 },
+    { label: 'Koneksi Aman', done: progress > 35 },
+    { label: 'Verifikasi Data', done: progress > 55 },
+    { label: 'Cek Duplikasi', done: progress > 75 },
   ]
 
   return (
