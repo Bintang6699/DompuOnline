@@ -22,6 +22,7 @@ interface FieldGuidance {
   problem: string
   solution: string
   severity: 'high' | 'medium' | 'low'
+  labelText: string
 }
 
 function parseGuidance(reasons: string[], similarVendors: { name: string; matches: string[] }[]): FieldGuidance[] {
@@ -37,6 +38,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: 'Nomor WhatsApp yang kamu masukkan sudah terdaftar di sistem kami.',
         solution: 'Gunakan nomor WhatsApp yang berbeda dan aktif. Setiap bisnis hanya boleh mendaftar dengan 1 nomor WA yang unik.',
         severity: 'high',
+        labelText: 'Wajib Diperbaiki',
       })
     } else if (r.includes('nama usaha') || r.includes('nama') && r.includes('mirip')) {
       const pct = reason.match(/\d+%/)?.[0] || ''
@@ -46,6 +48,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: `Nama usaha yang kamu masukkan terlalu mirip dengan bisnis yang sudah ada${pct ? ` (kemiripan ${pct})` : ''}.`,
         solution: 'Gunakan nama usaha yang unik dan berbeda. Tambahkan nama kota, nama pemilik, atau kata khas bisnismu. Contoh: "Warung Siti Dompu" bukan hanya "Warung Siti".',
         severity: 'high',
+        labelText: 'Wajib Diperbaiki',
       })
     } else if (r.includes('deskripsi') || r.includes('description')) {
       const pct = reason.match(/\d+%/)?.[0] || ''
@@ -55,6 +58,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: `Deskripsi usahamu terlalu mirip dengan deskripsi bisnis lain yang sudah terdaftar${pct ? ` (kemiripan ${pct})` : ''}.`,
         solution: 'Tulis deskripsi dengan kata-katamu sendiri. Ceritakan keunikan bisnismu, produk andalan, jam operasional, atau keunggulan layananmu secara spesifik.',
         severity: 'high',
+        labelText: 'Wajib Diperbaiki',
       })
     } else if (r.includes('alamat') || r.includes('address')) {
       guidance.push({
@@ -63,6 +67,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: 'Alamat yang kamu masukkan sangat mirip dengan bisnis lain yang sudah terdaftar.',
         solution: 'Pastikan alamat yang kamu masukkan adalah alamat tempat usahamu yang sesungguhnya. Tulis secara lengkap: nama jalan, nomor, RT/RW, kelurahan.',
         severity: 'medium',
+        labelText: 'Perlu Diperhatikan',
       })
     } else if (r.includes('ip') && (r.includes('sama') || r.includes('banyak') || r.includes('kali'))) {
       guidance.push({
@@ -71,6 +76,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: 'Terlalu banyak percobaan pendaftaran terdeteksi dari jaringan/perangkat yang sama dalam waktu singkat.',
         solution: 'Tunggu beberapa saat sebelum mencoba lagi, atau hubungi admin untuk mendaftarkan bisnismu secara manual.',
         severity: 'medium',
+        labelText: 'Perlu Diperhatikan',
       })
     } else if (r.includes('perangkat') || r.includes('fingerprint')) {
       guidance.push({
@@ -79,6 +85,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: 'Perangkat ini terdeteksi telah digunakan untuk mendaftar terlalu banyak akun.',
         solution: 'Hubungi admin untuk melakukan tinjauan manual pendaftaranmu.',
         severity: 'medium',
+        labelText: 'Perlu Diperhatikan',
       })
     } else if (r.includes('diblokir') || r.includes('blokir')) {
       guidance.push({
@@ -87,15 +94,16 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
         problem: 'IP address atau perangkat kamu telah diblokir oleh sistem keamanan.',
         solution: 'Hubungi admin secara langsung via WhatsApp atau email untuk meminta tinjauan manual.',
         severity: 'high',
+        labelText: 'Wajib Diperbaiki',
       })
     } else {
-      // Fallback for any unrecognized reason
       guidance.push({
         icon: <AlertTriangle size={15} />,
         field: 'Deteksi Keamanan',
         problem: reason,
         solution: 'Periksa kembali data yang kamu masukkan dan pastikan semua informasi adalah asli dan unik.',
         severity: 'low',
+        labelText: 'Info',
       })
     }
   }
@@ -111,6 +119,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
           problem: `Nama usahamu mirip dengan "${v.name}" yang sudah terdaftar.`,
           solution: 'Ubah nama usaha agar lebih unik. Tambahkan kata khas atau lokasi spesifik.',
           severity: 'high',
+          labelText: 'Wajib Diperbaiki',
         })
       } else if (m.includes('deskripsi') && !guidance.some(g => g.field === 'Deskripsi Usaha')) {
         guidance.push({
@@ -119,6 +128,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
           problem: `Deskripsi usahamu terlalu mirip dengan bisnis "${v.name}" yang sudah ada.`,
           solution: 'Tulis ulang deskripsi dengan bahasa dan informasi yang benar-benar milikmu sendiri.',
           severity: 'high',
+          labelText: 'Wajib Diperbaiki',
         })
       } else if (m.includes('alamat') && !guidance.some(g => g.field === 'Alamat Usaha')) {
         guidance.push({
@@ -127,6 +137,7 @@ function parseGuidance(reasons: string[], similarVendors: { name: string; matche
           problem: `Alamat yang kamu masukkan mirip dengan "${v.name}".`,
           solution: 'Pastikan alamat yang kamu tulis benar-benar lokasi bisnismu.',
           severity: 'medium',
+          labelText: 'Perlu Diperhatikan',
         })
       }
     }
