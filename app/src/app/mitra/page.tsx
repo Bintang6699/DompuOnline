@@ -134,7 +134,7 @@ export default function MitraPage() {
                 {[1, 2, 3, 4].map(i => <VendorCardSkeleton key={i} />)}
               </div>
             ) : vendors.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 px-0.5">
                 {vendors.map(vendor => (
                   <VendorCard key={vendor.id} vendor={vendor} shrink />
                 ))}

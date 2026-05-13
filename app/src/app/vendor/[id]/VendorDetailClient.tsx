@@ -541,11 +541,11 @@ export default function VendorDetailClient({ params }: Props) {
         <>
           {showCart && (
             <div
-              className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4"
+              className="fixed inset-0 z-[1000] flex items-end justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4"
               onClick={() => setShowCart(false)}
             >
                <div
-                className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col pb-safe-offset-6"
+                className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col pb-safe-offset-8"
                 onClick={(e) => e.stopPropagation()}
                >
                   <div className="flex items-center justify-between mb-6 shrink-0">
@@ -586,7 +586,7 @@ export default function VendorDetailClient({ params }: Props) {
                     </div>
                   </div>
 
-                  <div className="shrink-0 space-y-3 pb-safe">
+                  <div className="shrink-0 space-y-3 pb-safe sm:pb-0">
                     <button 
                       onClick={() => {
                         if (!buyerName.trim()) return alert('Masukkan namamu dulu ya!')
