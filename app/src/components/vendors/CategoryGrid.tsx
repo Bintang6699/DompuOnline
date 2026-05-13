@@ -24,7 +24,7 @@ export function CategoryGrid() {
           Semua <ChevronRight size={14} />
         </Link>
       </div>
-      <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory scrollbar-hide pb-2 -mx-2 px-2">
+      <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory no-scrollbar pb-2 -mx-2 px-2">
         {CATEGORIES.map((cat) => {
           const IconComponent = ICON_MAP[cat.slug] || ShoppingBag
           return (

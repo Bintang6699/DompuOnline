@@ -49,7 +49,7 @@ export default async function JobsPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto pb-28">
+      <main className="max-w-lg mx-auto pb-32">
         <div className="gradient-hero text-white px-5 pt-10 pb-12">
           <div className="flex items-center gap-2 mb-3">
              <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">

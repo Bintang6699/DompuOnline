@@ -11,7 +11,7 @@ export default function PanduanPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto pb-28">
+      <main className="max-w-lg mx-auto pb-32">
         <div className="gradient-hero text-white px-5 pt-8 pb-10">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen size={24} className="text-purple-300" />
@@ -94,7 +94,7 @@ export default function PanduanPage() {
             <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
               <p>Proses pendaftaran di platform kami dirancang agar sangat mudah:</p>
               <ul className="list-decimal pl-5 space-y-2 font-medium text-gray-700">
-                <li>Klik tombol "Daftar Mitra".</li>
+                <li>Klik tombol &quot;Daftar Mitra&quot;.</li>
                 <li>Pilih kategori usaha (Transportasi, Kuliner, Belanja, Jasa, atau Loker).</li>
                 <li>Lengkapi formulir secara jelas (Ketik harga berupa angka, contoh: 15000).</li>
                 <li>Unggah foto thumbnail jernih milik Anda.</li>

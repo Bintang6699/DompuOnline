@@ -456,7 +456,7 @@ export function SpamDetectedScreen({
         }}>
           <CheckCircle size={16} color="#d97706" style={{ flexShrink: 0, marginTop: 1 }} />
           <p style={{ fontSize: 12, color: '#92400e', lineHeight: 1.6, margin: 0 }}>
-            <strong>Cara terbaik:</strong> Klik <em>"Coba Daftar Ulang"</em> di bawah, lalu perbaiki data sesuai panduan di atas. Jika masih bermasalah, hubungi admin untuk tinjauan manual.
+            <strong>Cara terbaik:</strong> Klik <em>&quot;Coba Daftar Ulang&quot;</em> di bawah, lalu perbaiki data sesuai panduan di atas. Jika masih bermasalah, hubungi admin untuk tinjauan manual.
           </p>
         </div>
 

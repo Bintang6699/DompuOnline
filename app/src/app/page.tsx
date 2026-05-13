@@ -114,7 +114,7 @@ export default async function HomePage() {
     <div className="min-h-screen bg-gray-50/50">
       <Header />
 
-      <main className="max-w-lg mx-auto pb-28">
+      <main className="max-w-lg mx-auto pb-32">
         <div className="relative gradient-hero overflow-hidden pb-12">
           {sliders.length > 0 && (
             <div className="relative group">
@@ -122,8 +122,8 @@ export default async function HomePage() {
             </div>
           )}
 
-          <section className="relative z-20 text-white px-5 pt-10">
-            <h1 className="text-4xl font-black leading-[1.1] mb-4 tracking-tighter">
+          <section className="relative z-20 text-white px-5 pt-8 sm:pt-10">
+            <h1 className="text-3xl sm:text-5xl font-black leading-[1.1] mb-4 tracking-tighter">
               Semua Ada di 
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-blue-200 to-purple-200 animate-gradient">Dompu Online</span>
@@ -210,9 +210,9 @@ export default async function HomePage() {
                 <Sparkles size={18} className="text-yellow-400 fill-yellow-400" />
                 <h2 className="text-xl font-black text-gray-900 tracking-tight">Mitra Unggulan</h2>
               </div>
-              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory scrollbar-hide -mx-5 px-5">
+              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory no-scrollbar -mx-5 px-5 no-scrollbar">
                 {featured.map((vendor) => (
-                  <div key={vendor.id} className="w-[88%] sm:w-[300px] shrink-0 snap-center">
+                  <div key={vendor.id} className="w-[82%] sm:w-[300px] shrink-0 snap-center">
                     <VendorCard vendor={vendor} />
                   </div>
                 ))}
@@ -231,9 +231,9 @@ export default async function HomePage() {
               </div>
             </div>
             {latest.length > 0 ? (
-              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory scrollbar-hide -mx-5 px-5">
+              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory no-scrollbar -mx-5 px-5 no-scrollbar">
                 {latest.map((vendor) => (
-                  <div key={vendor.id} className="w-[88%] sm:w-[300px] shrink-0 snap-center">
+                  <div key={vendor.id} className="w-[82%] sm:w-[300px] shrink-0 snap-center">
                     <VendorCard vendor={vendor} />
                   </div>
                 ))}
@@ -335,7 +335,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-2xl font-black mb-3 tracking-tight">Go Digital Sekarang!</h3>
               <p className="text-sm text-purple-100/70 mb-8 max-w-[280px] leading-relaxed font-medium">
-                Dapatkan prioritas pencarian dan badge "Terverifikasi" untuk meningkatkan kepercayaan pelanggan.
+                Dapatkan prioritas pencarian dan badge &quot;Terverifikasi&quot; untuk meningkatkan kepercayaan pelanggan.
               </p>
               <Link href="/daftar" className="bg-white text-purple-900 font-black text-xs py-4 px-8 rounded-2xl inline-flex items-center gap-2 hover:bg-purple-50 transition-all active:scale-95">
                 MULAI SEKARANG <ArrowRight size={14} />

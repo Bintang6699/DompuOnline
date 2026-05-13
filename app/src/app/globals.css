@@ -45,6 +45,14 @@
 }
 
 /* Custom scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -202,4 +210,8 @@
 /* Safe area support for mobile */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pb-safe-offset-6 {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
 }

@@ -170,7 +170,7 @@ export default function VendorDetailClient({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto pb-48">
+      <main className="max-w-lg mx-auto pb-64">
         {/* Back */}
         <div className="px-4 pt-4">
           <button 
@@ -540,56 +540,72 @@ export default function VendorDetailClient({ params }: Props) {
       {cart.length > 0 && (
         <>
           {showCart && (
-            <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm">
-               <div className="bg-white rounded-t-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-black text-gray-900">Konfirmasi Pesanan</h3>
-                    <button onClick={() => setShowCart(false)} className="p-2 bg-gray-100 rounded-full text-gray-400"><X size={20} /></button>
+            <div
+              className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4"
+              onClick={() => setShowCart(false)}
+            >
+               <div
+                className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col pb-safe-offset-6"
+                onClick={(e) => e.stopPropagation()}
+               >
+                  <div className="flex items-center justify-between mb-6 shrink-0">
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Konfirmasi Pesanan</h3>
+                    <button onClick={() => setShowCart(false)} className="p-2 bg-gray-100 rounded-full text-gray-400 active:scale-90 transition-transform"><X size={20} /></button>
                   </div>
 
-                  <div className="max-h-[30vh] overflow-auto mb-6 space-y-3">
-                    {cart.map(item => (
-                      <div key={item.id} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2">
-                         <div>
-                           <p className="font-bold text-gray-800">{item.name}</p>
-                           <p className="text-[10px] text-gray-400">{item.quantity} x {formatCurrency(item.price)}</p>
-                         </div>
-                         <p className="font-black text-purple-600">{formatCurrency(item.price * item.quantity)}</p>
+                  <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2 no-scrollbar">
+                    <div className="space-y-3">
+                      {cart.map(item => (
+                        <div key={item.id} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2.5">
+                           <div className="min-w-0 pr-4">
+                             <p className="font-black text-gray-800 line-clamp-1">{item.name}</p>
+                             <p className="text-[10px] text-gray-400 font-bold">{item.quantity} x {formatCurrency(item.price)}</p>
+                           </div>
+                           <p className="font-black text-purple-600 shrink-0">{formatCurrency(item.price * item.quantity)}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-between items-center bg-purple-50 p-4 rounded-2xl border border-purple-100">
+                       <p className="font-black text-purple-900 text-sm uppercase tracking-wider">Total Pembayaran</p>
+                       <p className="font-black text-purple-700 text-xl">{formatCurrency(totalPrice)}</p>
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      <div>
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block">Informasi Pemesan</label>
+                         <input
+                           type="text"
+                           value={buyerName}
+                           onChange={(e) => setBuyerName(e.target.value)}
+                           placeholder="Contoh: Ahmad Dompu"
+                           className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all font-bold"
+                         />
+                         <p className="text-[10px] text-gray-400 mt-2 font-medium italic">*Nama akan muncul di pesan WhatsApp penjual</p>
                       </div>
-                    ))}
-                    <div className="flex justify-between pt-2">
-                       <p className="font-black text-gray-900">Total</p>
-                       <p className="font-black text-purple-700 text-lg">{formatCurrency(totalPrice)}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                       <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Nama Lengkap Kamu</label>
-                       <input 
-                         type="text" 
-                         value={buyerName}
-                         onChange={(e) => setBuyerName(e.target.value)}
-                         placeholder="Contoh: Ahmad Dompu"
-                         className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all font-semibold"
-                       />
-                       <p className="text-[10px] text-gray-400 mt-1.5 italic">*Nama akan muncul di pesan WhatsApp penjual</p>
-                    </div>
-
+                  <div className="shrink-0 space-y-3 pb-safe">
                     <button 
                       onClick={() => {
                         if (!buyerName.trim()) return alert('Masukkan namamu dulu ya!')
                         window.open(buildCartMessage(), '_blank')
                       }}
-                      className={`w-full font-black py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg ${
+                      className={`w-full font-black py-4.5 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98] ${
                         buyerName.trim() 
                         ? 'bg-green-600 text-white shadow-green-100' 
-                        : 'bg-gray-200 text-gray-400 pointer-events-none'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      <MessageCircle size={20} /> {buyerName.trim() ? 'Kirim Pesanan ke WA' : 'Lengkapi Nama'}
+                      <MessageCircle size={20} />
+                      <span className="uppercase tracking-widest text-sm">
+                        {buyerName.trim() ? 'Kirim Pesanan ke WA' : 'Lengkapi Nama'}
+                      </span>
                     </button>
-                    <p className="text-center text-[10px] text-gray-400">Pembayaran disepakati langsung dengan penjual via WhatsApp.</p>
+                    <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
+                      Pembayaran disepakati langsung dengan penjual
+                    </p>
                   </div>
                </div>
             </div>

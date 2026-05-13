@@ -125,23 +125,23 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
       {/* Content */}
       <div className={`${shrink ? 'p-2.5' : 'p-4'} flex flex-col flex-1`}>
         <Link href={`/vendor/${vendor.id}`}>
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className={`font-bold text-gray-900 leading-tight line-clamp-1 ${shrink ? 'text-sm' : 'text-base'}`}>{vendor.name}</h3>
+          <div className="flex items-start justify-between gap-1 mb-1">
+            <h3 className={`font-black text-gray-900 leading-tight line-clamp-1 ${shrink ? 'text-[11px] sm:text-sm' : 'text-base'}`}>{vendor.name}</h3>
             {avgRating && (
-              <div className="flex items-center gap-1 shrink-0">
-                <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                <span className="text-xs font-bold text-gray-700">{avgRating}</span>
+              <div className="flex items-center gap-0.5 shrink-0">
+                <Star size={shrink ? 10 : 12} className="text-yellow-400 fill-yellow-400" />
+                <span className={`${shrink ? 'text-[9px]' : 'text-xs'} font-black text-gray-700`}>{avgRating}</span>
               </div>
             )}
           </div>
           <div className="flex items-center gap-1 mt-0.5 mb-1.5">
-            <CheckCircle size={shrink ? 10 : 12} className="text-green-500 shrink-0" />
-            <span className={`${shrink ? 'text-[9px]' : 'text-xs'} text-gray-500 line-clamp-1`}>
+            <CheckCircle size={shrink ? 9 : 12} className="text-green-500 shrink-0" />
+            <span className={`${shrink ? 'text-[9px]' : 'text-xs'} text-gray-500 line-clamp-1 font-medium`}>
               Terverifikasi · {vendor.owner_name}
             </span>
           </div>
           
-          <p className={`${shrink ? 'text-[10px] line-clamp-1 mb-2' : 'text-xs line-clamp-2 mb-3'} text-gray-400 leading-relaxed`}>
+          <p className={`${shrink ? 'text-[9px] sm:text-[10px] line-clamp-2 mb-2 h-7' : 'text-xs line-clamp-2 mb-3 h-8'} text-gray-400 leading-relaxed font-medium`}>
             {vendor.description}
           </p>
 
@@ -154,16 +154,16 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
           )}
           
           {minPrice !== null && (
-            <div className={`${shrink ? 'mb-2' : 'mb-3'}`}>
-              <span className={`${shrink ? 'text-[8px]' : 'text-[10px]'} text-gray-400 font-medium block leading-none mb-0.5 uppercase tracking-tighter`}>Mulai dari</span>
-              <p className={`${shrink ? 'text-xs' : 'text-sm'} font-black text-purple-600 leading-none whitespace-nowrap`}>{formatCurrency(minPrice)}</p>
+            <div className={`${shrink ? 'mb-1.5' : 'mb-3'}`}>
+              <span className={`${shrink ? 'text-[7px] sm:text-[9px]' : 'text-[10px]'} text-gray-400 font-black block leading-none mb-0.5 uppercase tracking-tighter`}>Mulai dari</span>
+              <p className={`${shrink ? 'text-[10px] sm:text-xs' : 'text-sm'} font-black text-purple-600 leading-none whitespace-nowrap`}>{formatCurrency(minPrice)}</p>
             </div>
           )}
           
           {vendor.maps_link && (
-            <div className={`flex items-center gap-1 text-gray-400 ${shrink ? 'mb-2' : 'mb-3'}`}>
-              <MapPin size={shrink ? 9 : 11} className="text-purple-400" />
-              <span className={`${shrink ? 'text-[9px]' : 'text-xs'} line-clamp-1`}>Dompu, NTB</span>
+            <div className={`flex items-center gap-1 text-gray-400 ${shrink ? 'mb-1.5' : 'mb-3'}`}>
+              <MapPin size={shrink ? 8 : 11} className="text-purple-400 shrink-0" />
+              <span className={`${shrink ? 'text-[8px] sm:text-[10px]' : 'text-xs'} line-clamp-1 font-medium`}>Dompu, NTB</span>
             </div>
           )}
         </Link>

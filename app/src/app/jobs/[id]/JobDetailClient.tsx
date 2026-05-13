@@ -85,7 +85,7 @@ export default function JobDetailClient({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto pb-40">
+      <main className="max-w-lg mx-auto pb-64">
         <div className="px-5 pt-6 flex items-center justify-between">
            <button 
              onClick={() => router.back()} 

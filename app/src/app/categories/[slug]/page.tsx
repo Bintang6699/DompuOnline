@@ -76,7 +76,7 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto pb-28">
+      <main className="max-w-lg mx-auto pb-32">
         {/* Category Hero */}
         <div className={`bg-gradient-to-br ${category.color} px-4 pt-5 pb-8 text-white`}>
           <div className="text-5xl mb-3">{category.icon}</div>

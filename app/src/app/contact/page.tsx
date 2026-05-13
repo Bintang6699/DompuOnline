@@ -10,7 +10,7 @@ export default async function ContactPage() {
   const settings = await getSettings()
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-28">
+    <div className="min-h-screen bg-gray-50/50 pb-32">
       <Header />
       <main className="max-w-lg mx-auto p-5">
         <h1 className="text-2xl font-black text-gray-900 mb-2">Pusat Bantuan & Kontak</h1>
