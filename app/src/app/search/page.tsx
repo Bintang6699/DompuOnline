@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
-      <main className="max-w-lg mx-auto px-4 pt-5 pb-28">
+      <main className="max-w-lg mx-auto px-4 pt-5 pb-32">
         {q ? (
           <>
             <div className="mb-5">

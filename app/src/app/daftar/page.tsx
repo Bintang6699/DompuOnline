@@ -357,7 +357,7 @@ export default function DaftarPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="max-w-lg mx-auto px-4 pt-5 pb-28 relative z-10 isolate">
+      <main className="max-w-lg mx-auto px-4 pt-5 pb-32 relative z-10 isolate">
         <div className="mb-6">
           <h1 className="text-2xl font-black text-gray-900 mb-1">Daftar Sebagai Mitra</h1>
           <p className="text-sm text-gray-500">Lengkapi data usahamu untuk tampil di DompuOnline</p>

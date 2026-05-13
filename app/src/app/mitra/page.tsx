@@ -48,7 +48,7 @@ export default function MitraPage() {
   }, [activeCategory])
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-28">
+    <div className="min-h-screen bg-gray-50/50 pb-32">
       <Header />
       
       <main className="max-w-lg mx-auto">
@@ -57,7 +57,7 @@ export default function MitraPage() {
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Pilih Kategori</p>
           
           {/* Scrollable Category Filter */}
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x">
+          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar snap-x">
             <button
               onClick={() => setActiveCategory('semua')}
               className={`snap-start shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
