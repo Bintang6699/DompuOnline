@@ -536,126 +536,167 @@ export default function VendorDetailClient({ params }: Props) {
         </div>
       </main>
 
-      {/* Cart Summary Bar & Checkout Modal */}
-      {cart.length > 0 && (
-        <>
-          {showCart && (
-            <div
-              className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
-              onClick={() => setShowCart(false)}
-            >
-              {/* Backdrop */}
-              <div className="absolute inset-0 bg-black/70" />
+      {/* ============================================================ */}
+      {/* CHECKOUT CONFIRMATION MODAL — CENTERED DIALOG                */}
+      {/* ============================================================ */}
+      {showCart && cart.length > 0 && (
+        /* Full-screen overlay — klik luar = tutup */
+        <div
+          className="popup-backdrop fixed inset-0 z-[9999] flex items-center justify-center px-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.72)' }}
+          onClick={() => setShowCart(false)}
+        >
+          {/* Card — klik di dalam TIDAK menutup */}
+          <div
+            className="popup-modal-card bg-white w-full rounded-[28px] shadow-2xl flex flex-col overflow-hidden"
+            style={{ maxHeight: '82vh', maxWidth: '420px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
 
-              {/* Card */}
-              <div
-                className="relative bg-white rounded-[28px] w-full max-w-md shadow-2xl flex flex-col overflow-hidden"
-                style={{ maxHeight: 'calc(100dvh - 48px)', animation: 'popupIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0 border-b border-gray-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-2xl bg-purple-100 flex items-center justify-center">
-                      <ShoppingCart size={18} className="text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-base font-black text-gray-900 leading-none">Konfirmasi Pesanan</h3>
-                      <p className="text-[10px] text-gray-400 font-bold mt-0.5">{cart.reduce((a,b) => a + b.quantity, 0)} item dipilih</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowCart(false)}
-                    className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 active:scale-90 transition-all"
-                  >
-                    <X size={18} />
-                  </button>
+            {/* ── HEADER ── */}
+            <div style={{ borderBottom: '1px solid #f3f4f6' }} className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#f3eeff' }}>
+                  <ShoppingCart size={20} color="#7c3aed" />
                 </div>
-
-                {/* Scrollable content */}
-                <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 no-scrollbar">
-                  {/* Item list */}
-                  <div className="space-y-2.5">
-                    {cart.map(item => (
-                      <div key={item.id} className="flex justify-between items-center text-sm py-2 border-b border-gray-50 last:border-0">
-                        <div className="min-w-0 pr-4">
-                          <p className="font-black text-gray-800 line-clamp-1 text-sm">{item.name}</p>
-                          <p className="text-[10px] text-gray-400 font-bold mt-0.5">{item.quantity} x {formatCurrency(item.price)}</p>
-                        </div>
-                        <p className="font-black text-purple-600 shrink-0 text-sm">{formatCurrency(item.price * item.quantity)}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center bg-gradient-to-r from-purple-50 to-indigo-50 px-5 py-4 rounded-2xl border border-purple-100">
-                    <div>
-                      <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-0.5">Total</p>
-                      <p className="font-black text-purple-700 text-xl leading-none">{formatCurrency(totalPrice)}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-purple-100 rounded-2xl flex items-center justify-center">
-                      <span className="text-lg">🛒</span>
-                    </div>
-                  </div>
-
-                  {/* Buyer name */}
-                  <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block">
-                      Nama Lengkap Kamu
-                    </label>
-                    <input
-                      type="text"
-                      value={buyerName}
-                      onChange={(e) => setBuyerName(e.target.value)}
-                      placeholder="Contoh: Ahmad Dompu"
-                      className="w-full bg-gray-50 border-2 border-gray-100 focus:border-purple-300 rounded-2xl px-5 py-3.5 text-sm focus:outline-none transition-all font-bold placeholder:font-normal placeholder:text-gray-300"
-                    />
-                    <p className="text-[10px] text-gray-400 mt-1.5 font-medium italic">
-                      *Nama akan muncul di pesan WhatsApp penjual
-                    </p>
-                  </div>
-                </div>
-
-                {/* Action footer */}
-                <div className="px-6 pb-6 pt-4 shrink-0 space-y-2.5 border-t border-gray-100">
-                  <button
-                    onClick={() => {
-                      if (!buyerName.trim()) return alert('Masukkan namamu dulu ya!')
-                      window.open(buildCartMessage(), '_blank')
-                    }}
-                    className={`w-full font-black py-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] text-sm ${
-                      buyerName.trim()
-                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    <MessageCircle size={19} />
-                    <span className="uppercase tracking-widest">
-                      {buyerName.trim() ? 'Kirim Pesanan ke WhatsApp' : 'Lengkapi Nama Dulu'}
-                    </span>
-                  </button>
-                  <p className="text-center text-[9px] text-gray-300 font-bold uppercase tracking-wider">
-                    Pembayaran disepakati langsung dengan penjual
+                <div>
+                  <h3 className="font-black text-gray-900" style={{ fontSize: '15px', lineHeight: 1.2 }}>
+                    Konfirmasi Pesanan
+                  </h3>
+                  <p style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 700, marginTop: 2 }}>
+                    {cart.reduce((a, b) => a + b.quantity, 0)} item dipilih
                   </p>
                 </div>
               </div>
-
-              <style>{`
-                @keyframes popupIn {
-                  from { opacity: 0; transform: scale(0.88); }
-                  to   { opacity: 1; transform: scale(1); }
-                }
-              `}</style>
+              <button
+                onClick={() => setShowCart(false)}
+                className="active:scale-90 transition-transform"
+                style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  backgroundColor: '#f3f4f6', border: 'none',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={17} color="#6b7280" />
+              </button>
             </div>
-          )}
-        </>
+
+            {/* ── SCROLLABLE BODY ── */}
+            <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-4" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+              {/* Daftar item */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {cart.map((item, i) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      paddingTop: 12, paddingBottom: 12,
+                      borderBottom: i < cart.length - 1 ? '1px solid #f9fafb' : 'none',
+                    }}
+                  >
+                    <div style={{ minWidth: 0, paddingRight: 12 }}>
+                      <p style={{ fontWeight: 900, fontSize: 13, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.name}
+                      </p>
+                      <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginTop: 2 }}>
+                        {item.quantity} × {formatCurrency(item.price)}
+                      </p>
+                    </div>
+                    <p style={{ fontWeight: 900, fontSize: 13, color: '#7c3aed', whiteSpace: 'nowrap' }}>
+                      {formatCurrency(item.price * item.quantity)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Total */}
+              <div
+                style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+                  borderRadius: 20, padding: '14px 18px',
+                  border: '1px solid #ddd6fe',
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: 9, fontWeight: 900, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 4 }}>
+                    Total Pembayaran
+                  </p>
+                  <p style={{ fontSize: 22, fontWeight: 900, color: '#6d28d9', lineHeight: 1 }}>
+                    {formatCurrency(totalPrice)}
+                  </p>
+                </div>
+                <span style={{ fontSize: 28 }}>🛒</span>
+              </div>
+
+              {/* Input nama pembeli */}
+              <div>
+                <label style={{ fontSize: 10, fontWeight: 900, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.18em', display: 'block', marginBottom: 8 }}>
+                  Nama Lengkap Kamu
+                </label>
+                <input
+                  type="text"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="Contoh: Ahmad Dompu"
+                  style={{
+                    width: '100%', boxSizing: 'border-box',
+                    background: '#f9fafb',
+                    border: `2px solid ${buyerName.trim() ? '#a78bfa' : '#e5e7eb'}`,
+                    borderRadius: 16, padding: '13px 18px',
+                    fontSize: 14, fontWeight: 700, color: '#111827',
+                    outline: 'none', transition: 'border-color 0.2s',
+                  }}
+                />
+                <p style={{ fontSize: 10, color: '#9ca3af', marginTop: 6, fontStyle: 'italic' }}>
+                  *Nama akan muncul di pesan WhatsApp penjual
+                </p>
+              </div>
+            </div>
+
+            {/* ── ACTION FOOTER ── */}
+            <div style={{ borderTop: '1px solid #f3f4f6', padding: '16px 24px 20px' }} className="shrink-0">
+              <button
+                onClick={() => {
+                  if (!buyerName.trim()) return alert('Masukkan namamu dulu ya! 😊')
+                  window.open(buildCartMessage(), '_blank')
+                }}
+                style={{
+                  width: '100%',
+                  background: buyerName.trim()
+                    ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                    : '#e5e7eb',
+                  color: buyerName.trim() ? '#ffffff' : '#9ca3af',
+                  border: 'none', borderRadius: 18,
+                  padding: '15px 20px',
+                  fontWeight: 900, fontSize: 13,
+                  textTransform: 'uppercase', letterSpacing: '0.1em',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  cursor: buyerName.trim() ? 'pointer' : 'not-allowed',
+                  boxShadow: buyerName.trim() ? '0 8px 24px rgba(34,197,94,0.35)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <MessageCircle size={20} />
+                {buyerName.trim() ? 'Kirim Pesanan via WhatsApp' : 'Lengkapi Nama Dulu'}
+              </button>
+              <p style={{ textAlign: 'center', fontSize: 9, color: '#d1d5db', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 10 }}>
+                Pembayaran disepakati langsung dengan penjual
+              </p>
+            </div>
+
+          </div>
+        </div>
       )}
 
+      {/* Wrapper untuk sticky bottom bar — hanya tampil saat ada item di cart */}
       {/* Sticky Bottom CTA */}
-      <div className="fixed bottom-28 left-0 right-0 px-5 z-40 pointer-events-none">
+      <div className="fixed bottom-20 left-0 right-0 px-5 z-40 pointer-events-none">
         <div className="max-w-lg mx-auto pointer-events-auto">
           {cart.length === 0 ? (
-            <WhatsAppCTA 
+            <WhatsAppCTA
               phone={vendor.phone}
               vendorName={vendor.name}
               isTransport={vendor.categories?.slug === 'transport'}
@@ -665,27 +706,27 @@ export default function VendorDetailClient({ params }: Props) {
               {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact WhatsApp'}
             </WhatsAppCTA>
           ) : (
-             <button
-               onClick={() => setShowCart(true)}
-               className="w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white rounded-[24px] p-4 shadow-[0_12px_40px_-10px_rgba(126,34,206,0.5)] flex items-center justify-between group overflow-hidden relative active:scale-[0.98] transition-all"
-             >
-                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors pointer-events-none" />
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center relative shadow-inner">
-                    <ShoppingCart size={24} />
-                    <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-[3px] border-purple-700 shadow-sm">
-                      {cart.reduce((a, b) => a + b.quantity, 0)}
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <p className="text-[10px] font-black text-purple-200 uppercase tracking-widest leading-none mb-1">Total Pesanan</p>
-                    <p className="text-lg font-black whitespace-nowrap leading-none">{formatCurrency(totalPrice)}</p>
-                  </div>
+            <button
+              onClick={() => setShowCart(true)}
+              className="w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white rounded-[24px] p-4 shadow-[0_12px_40px_-10px_rgba(126,34,206,0.5)] flex items-center justify-between group overflow-hidden relative active:scale-[0.98] transition-all"
+            >
+              <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors pointer-events-none" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center relative shadow-inner">
+                  <ShoppingCart size={24} />
+                  <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-[3px] border-purple-700 shadow-sm">
+                    {cart.reduce((a, b) => a + b.quantity, 0)}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 font-black text-sm relative z-10 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm">
-                  BAYAR <ArrowRight size={18} />
+                <div className="text-left">
+                  <p className="text-[10px] font-black text-purple-200 uppercase tracking-widest leading-none mb-1">Total Pesanan</p>
+                  <p className="text-lg font-black whitespace-nowrap leading-none">{formatCurrency(totalPrice)}</p>
                 </div>
-             </button>
+              </div>
+              <div className="flex items-center gap-2 font-black text-sm relative z-10 bg-white/20 px-4 py-2 rounded-xl">
+                BAYAR <ArrowRight size={18} />
+              </div>
+            </button>
           )}
         </div>
       </div>
