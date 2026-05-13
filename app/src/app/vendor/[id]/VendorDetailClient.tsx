@@ -558,95 +558,50 @@ export default function VendorDetailClient({ params }: Props) {
       {mounted && showCart && cart.length > 0 && createPortal(
         <div
           onClick={() => setShowCart(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 16px',
-            backgroundColor: 'rgba(0,0,0,0.75)',
-          }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
         >
           {/* CARD */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className="popup-modal-card"
-            style={{
-              background: '#ffffff',
-              borderRadius: 28,
-              width: '100%',
-              maxWidth: 420,
-              maxHeight: '78vh',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-            }}
+            className="popup-modal-card bg-white rounded-[28px] w-full max-w-[420px] max-h-[85vh] shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden"
           >
             {/* HEADER */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '18px 22px 14px',
-              borderBottom: '1px solid #f3f4f6',
-              flexShrink: 0,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 14,
-                  backgroundColor: '#f3eeff',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <ShoppingCart size={20} color="#7c3aed" />
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+                  <ShoppingCart size={20} className="text-purple-600" />
                 </div>
                 <div>
-                  <p style={{ fontWeight: 900, fontSize: 15, color: '#111827', lineHeight: 1.2, margin: 0 }}>
-                    Konfirmasi Pesanan
-                  </p>
-                  <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, margin: '2px 0 0' }}>
+                  <h3 className="font-black text-base text-gray-900 leading-none">Konfirmasi Pesanan</h3>
+                  <p className="text-[10px] text-gray-400 font-bold mt-1">
                     {cart.reduce((a, b) => a + b.quantity, 0)} item dipilih
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCart(false)}
-                style={{
-                  width: 36, height: 36, borderRadius: '50%',
-                  backgroundColor: '#f3f4f6', border: 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', flexShrink: 0,
-                }}
+                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
               >
-                <X size={17} color="#6b7280" />
+                <X size={18} />
               </button>
             </div>
 
             {/* BODY — scrollable */}
-            <div style={{
-              flex: 1, overflowY: 'auto',
-              padding: '16px 22px',
-              display: 'flex', flexDirection: 'column', gap: 14,
-              WebkitOverflowScrolling: 'touch',
-            }}>
-
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 no-scrollbar">
               {/* List item pesanan */}
-              <div>
+              <div className="space-y-3">
                 {cart.map((item, i) => (
-                  <div key={item.id} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    paddingTop: 10, paddingBottom: 10,
-                    borderBottom: i < cart.length - 1 ? '1px solid #f9fafb' : 'none',
-                  }}>
-                    <div style={{ minWidth: 0, paddingRight: 10 }}>
-                      <p style={{ fontWeight: 900, fontSize: 13, color: '#111827', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {item.name}
-                      </p>
-                      <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, margin: '2px 0 0' }}>
+                  <div key={item.id} className={cn(
+                    "flex justify-between items-center py-2",
+                    i < cart.length - 1 && "border-b border-gray-50"
+                  )}>
+                    <div className="min-w-0 pr-3">
+                      <p className="font-black text-sm text-gray-900 truncate">{item.name}</p>
+                      <p className="text-[10px] text-gray-400 font-bold mt-0.5">
                         {item.quantity} × {formatCurrency(item.price)}
                       </p>
                     </div>
-                    <p style={{ fontWeight: 900, fontSize: 13, color: '#7c3aed', margin: 0, whiteSpace: 'nowrap' }}>
+                    <p className="font-black text-sm text-purple-600 whitespace-nowrap">
                       {formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
@@ -654,30 +609,19 @@ export default function VendorDetailClient({ params }: Props) {
               </div>
 
               {/* Total */}
-              <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)',
-                borderRadius: 18, padding: '12px 16px',
-                border: '1px solid #ddd6fe',
-              }}>
+              <div className="flex justify-between items-center bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-4 border border-purple-100">
                 <div>
-                  <p style={{ fontSize: 9, fontWeight: 900, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.15em', margin: '0 0 4px' }}>
-                    Total Pembayaran
-                  </p>
-                  <p style={{ fontSize: 22, fontWeight: 900, color: '#6d28d9', margin: 0, lineHeight: 1 }}>
+                  <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-1">Total Pembayaran</p>
+                  <p className="text-2xl font-black text-purple-700 leading-none">
                     {formatCurrency(totalPrice)}
                   </p>
                 </div>
-                <span style={{ fontSize: 26 }}>🛒</span>
+                <div className="text-2xl">🛒</div>
               </div>
 
               {/* Input nama */}
-              <div>
-                <label style={{
-                  fontSize: 10, fontWeight: 900, color: '#9ca3af',
-                  textTransform: 'uppercase', letterSpacing: '0.18em',
-                  display: 'block', marginBottom: 8,
-                }}>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">
                   Nama Lengkap Kamu
                 </label>
                 <input
@@ -685,27 +629,19 @@ export default function VendorDetailClient({ params }: Props) {
                   value={buyerName}
                   onChange={(e) => setBuyerName(e.target.value)}
                   placeholder="Contoh: Ahmad Dompu"
-                  style={{
-                    width: '100%', boxSizing: 'border-box',
-                    background: '#f9fafb',
-                    border: `2px solid ${buyerName.trim() ? '#a78bfa' : '#e5e7eb'}`,
-                    borderRadius: 14, padding: '13px 16px',
-                    fontSize: 14, fontWeight: 700, color: '#111827',
-                    outline: 'none',
-                  }}
+                  className={cn(
+                    "w-full bg-gray-50 border-2 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 outline-none transition-all",
+                    buyerName.trim() ? "border-purple-200 focus:border-purple-500" : "border-gray-100 focus:border-purple-200"
+                  )}
                 />
-                <p style={{ fontSize: 10, color: '#9ca3af', margin: '6px 0 0', fontStyle: 'italic' }}>
+                <p className="text-[10px] text-gray-400 italic mt-1">
                   *Nama akan muncul di pesan WhatsApp penjual
                 </p>
               </div>
             </div>
 
             {/* FOOTER — tombol WA */}
-            <div style={{
-              flexShrink: 0,
-              padding: '14px 22px 22px',
-              borderTop: '1px solid #f3f4f6',
-            }}>
+            <div className="shrink-0 px-6 py-5 border-t border-gray-100">
               <button
                 onClick={() => {
                   if (!buyerName.trim()) {
@@ -714,35 +650,17 @@ export default function VendorDetailClient({ params }: Props) {
                   }
                   window.open(buildCartMessage(), '_blank')
                 }}
-                style={{
-                  width: '100%',
-                  background: buyerName.trim()
-                    ? 'linear-gradient(135deg,#22c55e,#16a34a)'
-                    : '#e5e7eb',
-                  color: buyerName.trim() ? '#fff' : '#9ca3af',
-                  border: 'none',
-                  borderRadius: 16,
-                  padding: '16px',
-                  fontWeight: 900,
-                  fontSize: 14,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  cursor: buyerName.trim() ? 'pointer' : 'not-allowed',
-                  boxShadow: buyerName.trim() ? '0 8px 24px rgba(34,197,94,0.4)' : 'none',
-                }}
+                className={cn(
+                  "w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98]",
+                  buyerName.trim()
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-green-100"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
+                )}
               >
                 <MessageCircle size={20} />
-                {buyerName.trim() ? 'Kirim Pesanan via WhatsApp' : 'Lengkapi Nama Dulu'}
+                {buyerName.trim() ? 'Kirim Pesanan ke WA' : 'Lengkapi Nama Dulu'}
               </button>
-              <p style={{
-                textAlign: 'center', fontSize: 9, color: '#d1d5db',
-                fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.08em', marginTop: 10, marginBottom: 0,
-              }}>
+              <p className="text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-4">
                 Pembayaran disepakati langsung dengan penjual
               </p>
             </div>
@@ -751,42 +669,41 @@ export default function VendorDetailClient({ params }: Props) {
         document.body
       )}
 
-      {/* Wrapper untuk sticky bottom bar — hanya tampil saat ada item di cart */}
       {/* Sticky Bottom CTA */}
-      <div className="fixed bottom-20 left-0 right-0 px-5 z-40 pointer-events-none">
+      <div className="fixed bottom-28 left-0 right-0 px-5 z-40 pointer-events-none">
         <div className="max-w-lg mx-auto pointer-events-auto">
           {cart.length === 0 ? (
             <WhatsAppCTA
               phone={vendor.phone}
               vendorName={vendor.name}
               isTransport={vendor.categories?.slug === 'transport'}
-              className="w-full bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white font-black text-xs py-3 rounded-2xl flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all uppercase tracking-wider mx-auto max-w-[80%]"
+              className="w-full bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 text-white font-black text-sm py-3.5 rounded-[20px] flex items-center justify-center gap-2 shadow-[0_10px_30px_-8px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all uppercase tracking-widest"
             >
-              <MessageCircle size={18} className="drop-shadow-sm" />
-              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact WhatsApp'}
+              <MessageCircle size={20} className="drop-shadow-md" />
+              {vendor.categories?.slug === 'transport' ? 'Pesan Ojek/Mobil' : 'Contact via WhatsApp'}
             </WhatsAppCTA>
           ) : (
-            <button
-              onClick={() => setShowCart(true)}
-              className="w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white rounded-[24px] p-4 shadow-[0_12px_40px_-10px_rgba(126,34,206,0.5)] flex items-center justify-between group overflow-hidden relative active:scale-[0.98] transition-all"
-            >
-              <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors pointer-events-none" />
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center relative shadow-inner">
-                  <ShoppingCart size={24} />
-                  <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-[3px] border-purple-700 shadow-sm">
-                    {cart.reduce((a, b) => a + b.quantity, 0)}
-                  </span>
+             <button
+               onClick={() => setShowCart(true)}
+               className="w-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white rounded-[24px] p-4 shadow-[0_12px_40px_-10px_rgba(126,34,206,0.5)] flex items-center justify-between group overflow-hidden relative active:scale-[0.98] transition-all"
+             >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors pointer-events-none" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center relative shadow-inner">
+                    <ShoppingCart size={24} />
+                    <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-[3px] border-purple-700 shadow-sm">
+                      {cart.reduce((a, b) => a + b.quantity, 0)}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-black text-purple-200 uppercase tracking-widest leading-none mb-1">Total Pesanan</p>
+                    <p className="text-lg font-black whitespace-nowrap leading-none">{formatCurrency(totalPrice)}</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-[10px] font-black text-purple-200 uppercase tracking-widest leading-none mb-1">Total Pesanan</p>
-                  <p className="text-lg font-black whitespace-nowrap leading-none">{formatCurrency(totalPrice)}</p>
+                <div className="flex items-center gap-2 font-black text-sm relative z-10 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm">
+                  BAYAR <ArrowRight size={18} />
                 </div>
-              </div>
-              <div className="flex items-center gap-2 font-black text-sm relative z-10 bg-white/20 px-4 py-2 rounded-xl">
-                BAYAR <ArrowRight size={18} />
-              </div>
-            </button>
+             </button>
           )}
         </div>
       </div>

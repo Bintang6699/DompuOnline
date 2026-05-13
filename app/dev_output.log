@@ -1,0 +1,55 @@
+
+> app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 529ms
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at middleware (src/middleware.ts:55:38)
+  53 |   })
+  54 |
+> 55 |   const supabase = createServerClient(
+     |                                      ^
+  56 |     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  57 |     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  58 |     {
+ GET /vendor/some-id 404 in 1735ms (next.js: -163087µs, proxy.ts: 1725ms, application-code: 173ms)
+[browser] Uncaught Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at middleware (src/middleware.ts:55:38)
+  53 |   })
+  54 |
+> 55 |   const supabase = createServerClient(
+     |                                      ^
+  56 |     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  57 |     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  58 |     {
+○ Compiling /_not-found/page ...
+⨯ Error: supabaseUrl is required.
+    at module evaluation (src/lib/supabase.ts:6:37)
+    at module evaluation (src/components/pwa/PwaFeatures.tsx:6:1)
+  4 | const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  5 |
+> 6 | export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+    |                                     ^
+  7 |
+  8 | // Admin client with service role key (server-side only)
+  9 | export const createAdminClient = () => { {
+  digest: '3357984080'
+}
