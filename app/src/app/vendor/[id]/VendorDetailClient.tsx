@@ -541,74 +541,111 @@ export default function VendorDetailClient({ params }: Props) {
         <>
           {showCart && (
             <div
-              className="fixed inset-0 z-[1000] flex items-end justify-center bg-black/60 p-0 sm:p-4"
+              className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
               onClick={() => setShowCart(false)}
             >
-               <div
-                className="bg-white rounded-t-[32px] sm:rounded-[32px] w-full max-w-lg p-6 animate-in slide-in-from-bottom duration-300 flex flex-col"
-                style={{ maxHeight: 'calc(100vh - 80px)' }}
+              {/* Backdrop */}
+              <div className="absolute inset-0 bg-black/70" />
+
+              {/* Card */}
+              <div
+                className="relative bg-white rounded-[28px] w-full max-w-md shadow-2xl flex flex-col overflow-hidden"
+                style={{ maxHeight: 'calc(100dvh - 48px)', animation: 'popupIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both' }}
                 onClick={(e) => e.stopPropagation()}
-               >
-                  <div className="flex items-center justify-between mb-6 shrink-0">
-                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Konfirmasi Pesanan</h3>
-                    <button onClick={() => setShowCart(false)} className="p-2 bg-gray-100 rounded-full text-gray-400 active:scale-90 transition-transform"><X size={20} /></button>
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-2xl bg-purple-100 flex items-center justify-center">
+                      <ShoppingCart size={18} className="text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-black text-gray-900 leading-none">Konfirmasi Pesanan</h3>
+                      <p className="text-[10px] text-gray-400 font-bold mt-0.5">{cart.reduce((a,b) => a + b.quantity, 0)} item dipilih</p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-200 active:scale-90 transition-all"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
 
-                  <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2 no-scrollbar">
-                    <div className="space-y-3">
-                      {cart.map(item => (
-                        <div key={item.id} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2.5">
-                           <div className="min-w-0 pr-4">
-                             <p className="font-black text-gray-800 line-clamp-1">{item.name}</p>
-                             <p className="text-[10px] text-gray-400 font-bold">{item.quantity} x {formatCurrency(item.price)}</p>
-                           </div>
-                           <p className="font-black text-purple-600 shrink-0">{formatCurrency(item.price * item.quantity)}</p>
+                {/* Scrollable content */}
+                <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 no-scrollbar">
+                  {/* Item list */}
+                  <div className="space-y-2.5">
+                    {cart.map(item => (
+                      <div key={item.id} className="flex justify-between items-center text-sm py-2 border-b border-gray-50 last:border-0">
+                        <div className="min-w-0 pr-4">
+                          <p className="font-black text-gray-800 line-clamp-1 text-sm">{item.name}</p>
+                          <p className="text-[10px] text-gray-400 font-bold mt-0.5">{item.quantity} x {formatCurrency(item.price)}</p>
                         </div>
-                      ))}
-                    </div>
-
-                    <div className="flex justify-between items-center bg-purple-50 p-4 rounded-2xl border border-purple-100">
-                       <p className="font-black text-purple-900 text-sm uppercase tracking-wider">Total Pembayaran</p>
-                       <p className="font-black text-purple-700 text-xl">{formatCurrency(totalPrice)}</p>
-                    </div>
-
-                    <div className="space-y-4 pt-2">
-                      <div>
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block">Informasi Pemesan</label>
-                         <input
-                           type="text"
-                           value={buyerName}
-                           onChange={(e) => setBuyerName(e.target.value)}
-                           placeholder="Contoh: Ahmad Dompu"
-                           className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all font-bold"
-                         />
-                         <p className="text-[10px] text-gray-400 mt-2 font-medium italic">*Nama akan muncul di pesan WhatsApp penjual</p>
+                        <p className="font-black text-purple-600 shrink-0 text-sm">{formatCurrency(item.price * item.quantity)}</p>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Total */}
+                  <div className="flex justify-between items-center bg-gradient-to-r from-purple-50 to-indigo-50 px-5 py-4 rounded-2xl border border-purple-100">
+                    <div>
+                      <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-0.5">Total</p>
+                      <p className="font-black text-purple-700 text-xl leading-none">{formatCurrency(totalPrice)}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-purple-100 rounded-2xl flex items-center justify-center">
+                      <span className="text-lg">🛒</span>
                     </div>
                   </div>
 
-                  <div className="shrink-0 space-y-3">
-                    <button 
-                      onClick={() => {
-                        if (!buyerName.trim()) return alert('Masukkan namamu dulu ya!')
-                        window.open(buildCartMessage(), '_blank')
-                      }}
-                      className={`w-full font-black py-4.5 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.98] ${
-                        buyerName.trim() 
-                        ? 'bg-green-600 text-white shadow-green-100' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <MessageCircle size={20} />
-                      <span className="uppercase tracking-widest text-sm">
-                        {buyerName.trim() ? 'Kirim Pesanan ke WA' : 'Lengkapi Nama'}
-                      </span>
-                    </button>
-                    <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
-                      Pembayaran disepakati langsung dengan penjual
+                  {/* Buyer name */}
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2 block">
+                      Nama Lengkap Kamu
+                    </label>
+                    <input
+                      type="text"
+                      value={buyerName}
+                      onChange={(e) => setBuyerName(e.target.value)}
+                      placeholder="Contoh: Ahmad Dompu"
+                      className="w-full bg-gray-50 border-2 border-gray-100 focus:border-purple-300 rounded-2xl px-5 py-3.5 text-sm focus:outline-none transition-all font-bold placeholder:font-normal placeholder:text-gray-300"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1.5 font-medium italic">
+                      *Nama akan muncul di pesan WhatsApp penjual
                     </p>
                   </div>
-               </div>
+                </div>
+
+                {/* Action footer */}
+                <div className="px-6 pb-6 pt-4 shrink-0 space-y-2.5 border-t border-gray-100">
+                  <button
+                    onClick={() => {
+                      if (!buyerName.trim()) return alert('Masukkan namamu dulu ya!')
+                      window.open(buildCartMessage(), '_blank')
+                    }}
+                    className={`w-full font-black py-4 rounded-2xl flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] text-sm ${
+                      buyerName.trim()
+                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <MessageCircle size={19} />
+                    <span className="uppercase tracking-widest">
+                      {buyerName.trim() ? 'Kirim Pesanan ke WhatsApp' : 'Lengkapi Nama Dulu'}
+                    </span>
+                  </button>
+                  <p className="text-center text-[9px] text-gray-300 font-bold uppercase tracking-wider">
+                    Pembayaran disepakati langsung dengan penjual
+                  </p>
+                </div>
+              </div>
+
+              <style>{`
+                @keyframes popupIn {
+                  from { opacity: 0; transform: scale(0.88); }
+                  to   { opacity: 1; transform: scale(1); }
+                }
+              `}</style>
             </div>
           )}
         </>
