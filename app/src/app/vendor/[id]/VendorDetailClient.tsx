@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Header } from '@/components/layout/Header'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { supabase } from '@/lib/supabase'
@@ -40,6 +41,20 @@ export default function VendorDetailClient({ params }: Props) {
   const [likes, setLikes] = useState(0)
   const [isLiked, setIsLiked] = useState(false)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Mark component as mounted (needed for Portal)
+  useEffect(() => { setMounted(true) }, [])
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showCart) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [showCart])
 
   useEffect(() => {
     params.then(p => setId(p.id))
@@ -537,74 +552,101 @@ export default function VendorDetailClient({ params }: Props) {
       </main>
 
       {/* ============================================================ */}
-      {/* CHECKOUT CONFIRMATION MODAL — CENTERED DIALOG                */}
+      {/* CHECKOUT MODAL via React Portal → render langsung ke body    */}
+      {/* Solusi definitif: bypass semua stacking context & z-index    */}
       {/* ============================================================ */}
-      {showCart && cart.length > 0 && (
-        /* Full-screen overlay — klik luar = tutup */
+      {mounted && showCart && cart.length > 0 && createPortal(
         <div
-          className="popup-backdrop fixed inset-0 z-[9999] flex items-center justify-center px-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.72)' }}
           onClick={() => setShowCart(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 16px',
+            backgroundColor: 'rgba(0,0,0,0.75)',
+          }}
         >
-          {/* Card — klik di dalam TIDAK menutup */}
+          {/* CARD */}
           <div
-            className="popup-modal-card bg-white w-full rounded-[28px] shadow-2xl flex flex-col overflow-hidden"
-            style={{ maxHeight: '82vh', maxWidth: '420px' }}
             onClick={(e) => e.stopPropagation()}
+            className="popup-modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: 28,
+              width: '100%',
+              maxWidth: 420,
+              maxHeight: '78vh',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
           >
-
-            {/* ── HEADER ── */}
-            <div style={{ borderBottom: '1px solid #f3f4f6' }} className="flex items-center justify-between px-6 pt-5 pb-4 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#f3eeff' }}>
+            {/* HEADER */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '18px 22px 14px',
+              borderBottom: '1px solid #f3f4f6',
+              flexShrink: 0,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 14,
+                  backgroundColor: '#f3eeff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
                   <ShoppingCart size={20} color="#7c3aed" />
                 </div>
                 <div>
-                  <h3 className="font-black text-gray-900" style={{ fontSize: '15px', lineHeight: 1.2 }}>
+                  <p style={{ fontWeight: 900, fontSize: 15, color: '#111827', lineHeight: 1.2, margin: 0 }}>
                     Konfirmasi Pesanan
-                  </h3>
-                  <p style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 700, marginTop: 2 }}>
+                  </p>
+                  <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, margin: '2px 0 0' }}>
                     {cart.reduce((a, b) => a + b.quantity, 0)} item dipilih
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCart(false)}
-                className="active:scale-90 transition-transform"
                 style={{
                   width: 36, height: 36, borderRadius: '50%',
                   backgroundColor: '#f3f4f6', border: 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer',
+                  cursor: 'pointer', flexShrink: 0,
                 }}
               >
                 <X size={17} color="#6b7280" />
               </button>
             </div>
 
-            {/* ── SCROLLABLE BODY ── */}
-            <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-4" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* BODY — scrollable */}
+            <div style={{
+              flex: 1, overflowY: 'auto',
+              padding: '16px 22px',
+              display: 'flex', flexDirection: 'column', gap: 14,
+              WebkitOverflowScrolling: 'touch',
+            }}>
 
-              {/* Daftar item */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {/* List item pesanan */}
+              <div>
                 {cart.map((item, i) => (
-                  <div
-                    key={item.id}
-                    style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      paddingTop: 12, paddingBottom: 12,
-                      borderBottom: i < cart.length - 1 ? '1px solid #f9fafb' : 'none',
-                    }}
-                  >
-                    <div style={{ minWidth: 0, paddingRight: 12 }}>
-                      <p style={{ fontWeight: 900, fontSize: 13, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div key={item.id} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    paddingTop: 10, paddingBottom: 10,
+                    borderBottom: i < cart.length - 1 ? '1px solid #f9fafb' : 'none',
+                  }}>
+                    <div style={{ minWidth: 0, paddingRight: 10 }}>
+                      <p style={{ fontWeight: 900, fontSize: 13, color: '#111827', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.name}
                       </p>
-                      <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, marginTop: 2 }}>
+                      <p style={{ fontSize: 10, color: '#9ca3af', fontWeight: 700, margin: '2px 0 0' }}>
                         {item.quantity} × {formatCurrency(item.price)}
                       </p>
                     </div>
-                    <p style={{ fontWeight: 900, fontSize: 13, color: '#7c3aed', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontWeight: 900, fontSize: 13, color: '#7c3aed', margin: 0, whiteSpace: 'nowrap' }}>
                       {formatCurrency(item.price * item.quantity)}
                     </p>
                   </div>
@@ -612,28 +654,30 @@ export default function VendorDetailClient({ params }: Props) {
               </div>
 
               {/* Total */}
-              <div
-                style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
-                  borderRadius: 20, padding: '14px 18px',
-                  border: '1px solid #ddd6fe',
-                }}
-              >
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)',
+                borderRadius: 18, padding: '12px 16px',
+                border: '1px solid #ddd6fe',
+              }}>
                 <div>
-                  <p style={{ fontSize: 9, fontWeight: 900, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 4 }}>
+                  <p style={{ fontSize: 9, fontWeight: 900, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.15em', margin: '0 0 4px' }}>
                     Total Pembayaran
                   </p>
-                  <p style={{ fontSize: 22, fontWeight: 900, color: '#6d28d9', lineHeight: 1 }}>
+                  <p style={{ fontSize: 22, fontWeight: 900, color: '#6d28d9', margin: 0, lineHeight: 1 }}>
                     {formatCurrency(totalPrice)}
                   </p>
                 </div>
-                <span style={{ fontSize: 28 }}>🛒</span>
+                <span style={{ fontSize: 26 }}>🛒</span>
               </div>
 
-              {/* Input nama pembeli */}
+              {/* Input nama */}
               <div>
-                <label style={{ fontSize: 10, fontWeight: 900, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.18em', display: 'block', marginBottom: 8 }}>
+                <label style={{
+                  fontSize: 10, fontWeight: 900, color: '#9ca3af',
+                  textTransform: 'uppercase', letterSpacing: '0.18em',
+                  display: 'block', marginBottom: 8,
+                }}>
                   Nama Lengkap Kamu
                 </label>
                 <input
@@ -645,50 +689,66 @@ export default function VendorDetailClient({ params }: Props) {
                     width: '100%', boxSizing: 'border-box',
                     background: '#f9fafb',
                     border: `2px solid ${buyerName.trim() ? '#a78bfa' : '#e5e7eb'}`,
-                    borderRadius: 16, padding: '13px 18px',
+                    borderRadius: 14, padding: '13px 16px',
                     fontSize: 14, fontWeight: 700, color: '#111827',
-                    outline: 'none', transition: 'border-color 0.2s',
+                    outline: 'none',
                   }}
                 />
-                <p style={{ fontSize: 10, color: '#9ca3af', marginTop: 6, fontStyle: 'italic' }}>
+                <p style={{ fontSize: 10, color: '#9ca3af', margin: '6px 0 0', fontStyle: 'italic' }}>
                   *Nama akan muncul di pesan WhatsApp penjual
                 </p>
               </div>
             </div>
 
-            {/* ── ACTION FOOTER ── */}
-            <div style={{ borderTop: '1px solid #f3f4f6', padding: '16px 24px 20px' }} className="shrink-0">
+            {/* FOOTER — tombol WA */}
+            <div style={{
+              flexShrink: 0,
+              padding: '14px 22px 22px',
+              borderTop: '1px solid #f3f4f6',
+            }}>
               <button
                 onClick={() => {
-                  if (!buyerName.trim()) return alert('Masukkan namamu dulu ya! 😊')
+                  if (!buyerName.trim()) {
+                    alert('Masukkan namamu dulu ya! 😊')
+                    return
+                  }
                   window.open(buildCartMessage(), '_blank')
                 }}
                 style={{
                   width: '100%',
                   background: buyerName.trim()
-                    ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                    ? 'linear-gradient(135deg,#22c55e,#16a34a)'
                     : '#e5e7eb',
-                  color: buyerName.trim() ? '#ffffff' : '#9ca3af',
-                  border: 'none', borderRadius: 18,
-                  padding: '15px 20px',
-                  fontWeight: 900, fontSize: 13,
-                  textTransform: 'uppercase', letterSpacing: '0.1em',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  color: buyerName.trim() ? '#fff' : '#9ca3af',
+                  border: 'none',
+                  borderRadius: 16,
+                  padding: '16px',
+                  fontWeight: 900,
+                  fontSize: 14,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
                   cursor: buyerName.trim() ? 'pointer' : 'not-allowed',
-                  boxShadow: buyerName.trim() ? '0 8px 24px rgba(34,197,94,0.35)' : 'none',
-                  transition: 'all 0.2s',
+                  boxShadow: buyerName.trim() ? '0 8px 24px rgba(34,197,94,0.4)' : 'none',
                 }}
               >
                 <MessageCircle size={20} />
                 {buyerName.trim() ? 'Kirim Pesanan via WhatsApp' : 'Lengkapi Nama Dulu'}
               </button>
-              <p style={{ textAlign: 'center', fontSize: 9, color: '#d1d5db', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 10 }}>
+              <p style={{
+                textAlign: 'center', fontSize: 9, color: '#d1d5db',
+                fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '0.08em', marginTop: 10, marginBottom: 0,
+              }}>
                 Pembayaran disepakati langsung dengan penjual
               </p>
             </div>
-
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Wrapper untuk sticky bottom bar — hanya tampil saat ada item di cart */}
