@@ -82,8 +82,8 @@ export function WhatsAppCTA({ phone, vendorName, isTransport, className, childre
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={(e) => e.stopPropagation()}>
-          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
             {/* Header Modal */}
             <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-4 text-white relative">
               <button 

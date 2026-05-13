@@ -92,8 +92,8 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
         {/* Featured badge */}
         {vendor.is_featured && (
           <div className="absolute top-2 left-2">
-            <span className="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold px-2.5 py-1 rounded-full featured-pulse shadow-sm">
-              <Crown size={10} />
+            <span className={`flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold rounded-full featured-pulse shadow-sm ${shrink ? 'text-[8px] px-1.5 py-0.5' : 'text-xs px-2.5 py-1'}`}>
+              <Crown size={shrink ? 8 : 10} />
               Unggulan
             </span>
           </div>
@@ -111,12 +111,12 @@ export function VendorCard({ vendor, shrink }: VendorCardProps) {
             <Heart size={12} className={isLiked ? 'fill-current' : ''} />
             <span className="text-[10px] font-black">{likes}</span>
           </button>
-          <span className="bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-full uppercase font-bold tracking-wider">
+          <span className={`bg-black/60 text-white rounded-full uppercase font-bold tracking-wider ${shrink ? 'text-[8px] px-1.5 py-0.5' : 'text-[10px] px-2.5 py-1'}`}>
             {vendor.categories?.name || 'Bisnis'}
           </span>
           {vendor.is_cod && (
-            <span className="bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black flex items-center gap-1 shadow-sm">
-              <Truck size={10} /> COD
+            <span className={`bg-green-500 text-white rounded-full font-black flex items-center gap-1 shadow-sm ${shrink ? 'text-[8px] px-1.5 py-0.5' : 'text-[9px] px-2 py-0.5'}`}>
+              <Truck size={shrink ? 8 : 10} /> COD
             </span>
           )}
         </div>

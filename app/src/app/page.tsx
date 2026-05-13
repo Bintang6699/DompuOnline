@@ -210,9 +210,9 @@ export default async function HomePage() {
                 <Sparkles size={18} className="text-yellow-400 fill-yellow-400" />
                 <h2 className="text-xl font-black text-gray-900 tracking-tight">Mitra Unggulan</h2>
               </div>
-              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory no-scrollbar -mx-5 px-5 no-scrollbar">
+              <div className="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory scrollbar-hide -mx-5 px-5 no-scrollbar">
                 {featured.map((vendor) => (
-                  <div key={vendor.id} className="w-[82%] sm:w-[300px] shrink-0 snap-center">
+                  <div key={vendor.id} className="w-[280px] max-w-[85%] shrink-0 snap-center">
                     <VendorCard vendor={vendor} />
                   </div>
                 ))}
@@ -231,9 +231,9 @@ export default async function HomePage() {
               </div>
             </div>
             {latest.length > 0 ? (
-              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory no-scrollbar -mx-5 px-5 no-scrollbar">
+              <div className="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory scrollbar-hide -mx-5 px-5 no-scrollbar">
                 {latest.map((vendor) => (
-                  <div key={vendor.id} className="w-[82%] sm:w-[300px] shrink-0 snap-center">
+                  <div key={vendor.id} className="w-[280px] max-w-[85%] shrink-0 snap-center">
                     <VendorCard vendor={vendor} />
                   </div>
                 ))}
