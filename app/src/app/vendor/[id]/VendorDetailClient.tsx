@@ -10,8 +10,7 @@ import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   MessageCircle, MapPin, Star, Crown, CheckCircle, ArrowLeft,
-  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation, Heart,
-  Facebook, Instagram, Twitter, Link as LinkIcon
+  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation, Heart
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from '@/components/vendors/WhatsAppCTA'
@@ -317,23 +316,31 @@ export default function VendorDetailClient({ params }: Props) {
             {(vendor.facebook_url || vendor.instagram_url || vendor.tiktok_url || vendor.twitter_url) && (
               <div className="flex flex-wrap gap-3 pt-5 mt-5 border-t border-gray-50">
                 {vendor.facebook_url && (
-                  <a href={vendor.facebook_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-all hover:scale-110">
-                    <Facebook size={18} />
+                  <a href={vendor.facebook_url} target="_blank" rel="noreferrer"
+                    className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-all hover:scale-110"
+                    title="Facebook">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                   </a>
                 )}
                 {vendor.instagram_url && (
-                  <a href={vendor.instagram_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-all hover:scale-110">
-                    <Instagram size={18} />
+                  <a href={vendor.instagram_url} target="_blank" rel="noreferrer"
+                    className="w-10 h-10 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-all hover:scale-110"
+                    title="Instagram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                   </a>
                 )}
                 {vendor.tiktok_url && (
-                  <a href={vendor.tiktok_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center hover:bg-gray-200 transition-all hover:scale-110">
-                    <LinkIcon size={18} />
+                  <a href={vendor.tiktok_url} target="_blank" rel="noreferrer"
+                    className="w-10 h-10 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center hover:bg-gray-200 transition-all hover:scale-110"
+                    title="TikTok">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.41a8.16 8.16 0 0 0 4.77 1.52V7.48a4.85 4.85 0 0 1-1-.79z"/></svg>
                   </a>
                 )}
                 {vendor.twitter_url && (
-                  <a href={vendor.twitter_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center hover:bg-slate-200 transition-all hover:scale-110">
-                    <Twitter size={18} />
+                  <a href={vendor.twitter_url} target="_blank" rel="noreferrer"
+                    className="w-10 h-10 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center hover:bg-slate-200 transition-all hover:scale-110"
+                    title="X / Twitter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zM17.083 19.77h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
                   </a>
                 )}
               </div>

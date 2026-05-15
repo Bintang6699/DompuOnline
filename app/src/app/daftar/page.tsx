@@ -16,7 +16,7 @@ import { SpamDetectedScreen } from '@/components/ui/SpamDetectedScreen'
 import {
   CheckCircle, Upload, ArrowRight, ArrowLeft, MapPin,
   Phone, Store, Package, Crown, X, Plus, ShieldAlert, BookOpen, MessageCircle,
-  Truck, Shield, Facebook, Instagram, Twitter
+  Truck, Shield
 } from 'lucide-react'
 
 // Lightweight device fingerprint (no external dep)
