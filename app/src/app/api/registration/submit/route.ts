@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
 import { getSubscriptionPrice } from '@/lib/utils'
+import { sendAdminNotification } from '@/lib/email'
 
 function normalizePhone(phone: string): string {
   if (!phone) return ''
@@ -119,6 +120,10 @@ export async function POST(request: Request) {
       address_detail: formData.address_detail || null,
       hashtags: formData.hashtags || [],
       is_cod: formData.is_cod || false,
+      facebook_url: formData.facebook_url || null,
+      instagram_url: formData.instagram_url || null,
+      tiktok_url: formData.tiktok_url || null,
+      twitter_url: formData.twitter_url || null,
       status: 'pending',
       subscription_status: 'pending',
     })
@@ -132,6 +137,16 @@ export async function POST(request: Request) {
       status: 'pending',
       amount_paid: getSubscriptionPrice(formData.plan || '1_month'),
     })
+
+    // Send Admin Email Notification asynchronously
+    sendAdminNotification({
+      vendorName: formData.name,
+      ownerName: formData.owner_name,
+      phone: formData.phone,
+      category: formData.category_id,
+      address: formData.address_detail || '-',
+      description: finalDescription,
+    }).catch(console.error)
 
     return NextResponse.json({ success: true, vendor_id: vendorId })
   } catch (err: any) {

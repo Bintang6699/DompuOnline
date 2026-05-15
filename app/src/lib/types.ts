@@ -37,6 +37,10 @@ export interface Vendor {
   is_cod?: boolean
   address_detail?: string
   likes_count?: number
+  facebook_url?: string
+  instagram_url?: string
+  tiktok_url?: string
+  twitter_url?: string
 }
 
 export interface Product {
@@ -141,6 +145,10 @@ export interface VendorFormData {
   // New features
   hashtags?: string[]
   is_cod?: boolean
+  facebook_url?: string
+  instagram_url?: string
+  tiktok_url?: string
+  twitter_url?: string
 }
 
 export interface CommunityLink {

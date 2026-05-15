@@ -47,6 +47,7 @@ export const viewport: Viewport = {
 }
 
 import { PwaFeatures } from '@/components/pwa/PwaFeatures'
+import { RealtimeNotification } from '@/components/ui/RealtimeNotification'
 
 export default function RootLayout({
   children,
@@ -57,6 +58,7 @@ export default function RootLayout({
     <html lang="id" className={poppins.variable}>
       <body className={`${poppins.className} antialiased`}>
         <PwaFeatures />
+        <RealtimeNotification />
         {children}
       </body>
     </html>

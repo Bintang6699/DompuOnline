@@ -10,7 +10,8 @@ import { notFound, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import {
   MessageCircle, MapPin, Star, Crown, CheckCircle, ArrowLeft,
-  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation, Heart
+  Clock, Package, Briefcase, Wrench, ShoppingCart, Plus, Minus, X, ArrowRight, Truck, Navigation, Heart,
+  Facebook, Instagram, Twitter, Link as LinkIcon
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppCTA } from '@/components/vendors/WhatsAppCTA'
@@ -309,6 +310,32 @@ export default function VendorDetailClient({ params }: Props) {
                     #{tag}
                   </Link>
                 ))}
+              </div>
+            )}
+
+            {/* Social Media Links */}
+            {(vendor.facebook_url || vendor.instagram_url || vendor.tiktok_url || vendor.twitter_url) && (
+              <div className="flex flex-wrap gap-3 pt-5 mt-5 border-t border-gray-50">
+                {vendor.facebook_url && (
+                  <a href={vendor.facebook_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-all hover:scale-110">
+                    <Facebook size={18} />
+                  </a>
+                )}
+                {vendor.instagram_url && (
+                  <a href={vendor.instagram_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center hover:bg-pink-100 transition-all hover:scale-110">
+                    <Instagram size={18} />
+                  </a>
+                )}
+                {vendor.tiktok_url && (
+                  <a href={vendor.tiktok_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-gray-100 text-gray-800 flex items-center justify-center hover:bg-gray-200 transition-all hover:scale-110">
+                    <LinkIcon size={18} />
+                  </a>
+                )}
+                {vendor.twitter_url && (
+                  <a href={vendor.twitter_url} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center hover:bg-slate-200 transition-all hover:scale-110">
+                    <Twitter size={18} />
+                  </a>
+                )}
               </div>
             )}
           </div>

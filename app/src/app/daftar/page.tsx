@@ -16,7 +16,7 @@ import { SpamDetectedScreen } from '@/components/ui/SpamDetectedScreen'
 import {
   CheckCircle, Upload, ArrowRight, ArrowLeft, MapPin,
   Phone, Store, Package, Crown, X, Plus, ShieldAlert, BookOpen, MessageCircle,
-  Truck, Shield
+  Truck, Shield, Facebook, Instagram, Twitter
 } from 'lucide-react'
 
 // Lightweight device fingerprint (no external dep)
@@ -117,6 +117,10 @@ export default function DaftarPage() {
     job_description: '',
     job_requirements: '',
     plan: '1_month',
+    facebook_url: '',
+    instagram_url: '',
+    tiktok_url: '',
+    twitter_url: '',
   })
 
   useEffect(() => {
@@ -495,6 +499,37 @@ export default function DaftarPage() {
               error={errors.description}
               required
             />
+            
+            {/* Social Media (Optional) */}
+            <div className="pt-4 border-t border-gray-100">
+              <h3 className="text-sm font-bold text-gray-900 mb-3">Sosial Media (Opsional)</h3>
+              <div className="space-y-3">
+                <Input
+                  id="facebook_url"
+                  placeholder="Link Facebook (Contoh: https://facebook.com/...)"
+                  value={formData.facebook_url || ''}
+                  onChange={(e) => updateField('facebook_url', e.target.value)}
+                />
+                <Input
+                  id="instagram_url"
+                  placeholder="Link Instagram (Contoh: https://instagram.com/...)"
+                  value={formData.instagram_url || ''}
+                  onChange={(e) => updateField('instagram_url', e.target.value)}
+                />
+                <Input
+                  id="tiktok_url"
+                  placeholder="Link TikTok (Contoh: https://tiktok.com/...)"
+                  value={formData.tiktok_url || ''}
+                  onChange={(e) => updateField('tiktok_url', e.target.value)}
+                />
+                <Input
+                  id="twitter_url"
+                  placeholder="Link X/Twitter (Contoh: https://x.com/...)"
+                  value={formData.twitter_url || ''}
+                  onChange={(e) => updateField('twitter_url', e.target.value)}
+                />
+              </div>
+            </div>
           </div>
         )}
 
