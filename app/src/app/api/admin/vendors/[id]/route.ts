@@ -18,7 +18,7 @@ export async function GET(
         *, categories(id, name, icon, slug),
         media(id, type, url),
         ratings(id, quality_score, cleanliness_score, trust_score, notes),
-        products(id, name, price, description, image_url),
+        products(id, name, price, description, image_url, livestock_details),
         services(id, title, price, description),
         jobs(id, title, description, requirements, location, type),
         subscriptions(id, plan, status, start_date, end_date, amount_paid)

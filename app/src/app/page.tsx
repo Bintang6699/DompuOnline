@@ -7,7 +7,7 @@ import { VendorCard } from '@/components/vendors/VendorCard'
 import { Vendor, CommunityLink } from '@/lib/types'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Sparkles, TrendingUp, Shield, MapPin, MessageCircle, Globe, ExternalLink, Mail, ShoppingBag, Newspaper, Wrench, Utensils, Briefcase, Car, Box } from 'lucide-react'
+import { ArrowRight, Sparkles, TrendingUp, Shield, MapPin, MessageCircle, Globe, ExternalLink, Mail, ShoppingBag, Newspaper, Wrench, Utensils, Briefcase, Car, Box, PawPrint } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +35,7 @@ async function getCategories() {
     const { data } = await adminSupabase
       .from('categories')
       .select('*')
+      .neq('slug', 'system-settings-kv')
       .order('name', { ascending: true })
     return data || []
   } catch { return [] }
@@ -178,6 +179,7 @@ export default async function HomePage() {
                   if (catName.includes('kuliner')) return <Utensils size={24} className="text-purple-600" />;
                   if (catName.includes('loker')) return <Briefcase size={24} className="text-purple-600" />;
                   if (catName.includes('transport')) return <Car size={24} className="text-purple-600" />;
+                  if (catName.includes('ternak')) return <PawPrint size={24} className="text-purple-600" />;
                   return <Box size={24} className="text-purple-600" />;
                 };
                 

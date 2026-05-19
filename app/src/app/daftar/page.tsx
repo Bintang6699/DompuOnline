@@ -44,6 +44,7 @@ const CATEGORIES = [
   { value: 'food', label: '🍽️ Kuliner (Makanan & Minuman)' },
   { value: 'shopping', label: '🛍️ Belanja (Produk/Elektronik)' },
   { value: 'services', label: '🔧 Jasa (Layanan Profesional)' },
+  { value: 'ternak', label: '🐄 Ternak (Hewan & Peliharaan)' },
 ]
 
 const SUBSCRIPTION_PLANS = [
@@ -95,7 +96,20 @@ export default function DaftarPage() {
   const [videoPreview, setVideoPreview] = useState<string>('')
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [menus, setMenus] = useState([{ name: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
-  const [productsList, setProductsList] = useState([{ name: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
+  const [productsList, setProductsList] = useState<{
+    name: string
+    price: string
+    description: string
+    image: File | null
+    imagePreview: string
+    livestockDetails?: {
+      animalType: 'Ayam' | 'Bebek' | 'Sapi' | 'Kuda' | 'Kambing'
+      priceUnit?: 'Per Kilo' | 'Per Ekor'
+      weight?: number
+      age?: string
+      gender?: string
+    }
+  }[]>([{ name: '', price: '', description: '', image: null, imagePreview: '' }])
   const [servicesList, setServicesList] = useState([{ title: '', price: '', description: '', image: null as File | null, imagePreview: '' }])
   const [enableFreeTrial, setEnableFreeTrial] = useState(false)
   const [hashtagInput, setHashtagInput] = useState('')
@@ -314,16 +328,51 @@ export default function DaftarPage() {
       if (video) await uploadMedia(video, 'video')
       for (let i = 0; i < gallery.length; i++) await uploadMedia(gallery[i], `gal_${i}`)
 
-      // Upload item images
-      if (formData.category_id === 'food') {
-        for (const m of menus.filter(m => m.name && m.image)) {
-          const ext = m.image!.name.split('.').pop()
-          const path = `vendors/${vendorId}/menu_${Date.now()}.${ext}`
-          const { data: up } = await supabase.storage.from('media').upload(path, m.image!, { cacheControl: '3600' })
-          if (up) {
-            const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
-            await supabase.from('products').update({ image_url: urlData.publicUrl }).eq('vendor_id', vendorId).eq('name', m.name)
+      // Insert products/services/menus and upload images
+      if (formData.category_id === 'food' || formData.category_id === 'shopping' || formData.category_id === 'ternak') {
+        const items = formData.category_id === 'food' ? menus : productsList
+        for (const item of items.filter(x => x.name)) {
+          const parsedPrice = parseFloat(item.price.replace(/\D/g, '')) || 0
+          
+          let livestockVal = null
+          if (formData.category_id === 'ternak') {
+            const details = (item as any).livestockDetails || { animalType: 'Ayam', priceUnit: 'Per Ekor', weight: '', age: '', gender: '' }
+            livestockVal = {
+              animalType: details.animalType,
+              priceUnit: (details.animalType === 'Ayam' || details.animalType === 'Bebek') ? details.priceUnit : undefined,
+              weight: (details.animalType !== 'Ayam' && details.animalType !== 'Bebek') ? details.weight : undefined,
+              age: (details.animalType !== 'Ayam' && details.animalType !== 'Bebek') ? details.age : undefined,
+              gender: (details.animalType !== 'Ayam' && details.animalType !== 'Bebek') ? details.gender : undefined
+            }
           }
+
+          const { data: prodData, error: prodErr } = await supabase.from('products').insert({
+            vendor_id: vendorId,
+            name: item.name,
+            price: parsedPrice,
+            description: item.description || null,
+            livestock_details: livestockVal
+          }).select().single()
+
+          if (!prodErr && prodData && item.image) {
+            const ext = item.image.name.split('.').pop()
+            const path = `vendors/${vendorId}/product_${prodData.id}_${Date.now()}.${ext}`
+            const { data: up } = await supabase.storage.from('media').upload(path, item.image, { cacheControl: '3600' })
+            if (up) {
+              const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+              await supabase.from('products').update({ image_url: urlData.publicUrl }).eq('id', prodData.id)
+            }
+          }
+        }
+      } else if (formData.category_id === 'services') {
+        for (const item of servicesList.filter(x => x.title)) {
+          const parsedPrice = parseFloat(item.price.replace(/\D/g, '')) || 0
+          await supabase.from('services').insert({
+            vendor_id: vendorId,
+            title: item.title,
+            price: parsedPrice,
+            description: item.description || null
+          })
         }
       }
 
@@ -724,6 +773,157 @@ export default function DaftarPage() {
                 <button onClick={() => setProductsList([...productsList, { name: '', price: '', description: '', image: null, imagePreview: '' }])}
                   className="flex items-center gap-2 text-sm text-purple-600 font-semibold">
                   <Plus size={16} /> Tambah Produk Baru
+                </button>
+              </div>
+            )}
+
+            {/* Ternak */}
+            {formData.category_id === 'ternak' && (
+              <div>
+                <label className="text-sm font-semibold text-gray-700 mb-3 block">Daftar Hewan Ternak</label>
+                {productsList.map((p, i) => {
+                  if (!p.livestockDetails) {
+                    p.livestockDetails = { animalType: 'Ayam', priceUnit: 'Per Ekor', weight: undefined, age: '', gender: '' }
+                  }
+                  const details = p.livestockDetails
+                  const isPoultry = details.animalType === 'Ayam' || details.animalType === 'Bebek'
+                  
+                  return (
+                    <div key={i} className="bg-gray-50 rounded-xl p-4 mb-3 relative border border-gray-100 shadow-sm">
+                      <div className="flex gap-4">
+                        <div className="w-20 h-20 shrink-0 relative rounded-xl overflow-hidden bg-white border-2 border-dashed border-gray-200 flex items-center justify-center group">
+                          <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-colors">
+                            {p.imagePreview ? (
+                              <Image src={p.imagePreview} alt="" fill className="object-cover" />
+                            ) : (
+                              <>
+                                <Plus size={20} className="text-gray-300" />
+                                <span className="text-[8px] font-bold text-gray-400 mt-1 uppercase">Foto</span>
+                              </>
+                            )}
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleItemImage('product', i, e.target.files?.[0])} />
+                          </label>
+                        </div>
+                        <div className="flex-1 space-y-3">
+                          <Input id={`ternak-name-${i}`} placeholder="Nama Hewan (Contoh: Sapi Bali, Ayam Kampung)" value={p.name}
+                            onChange={(e) => { const u=[...productsList]; u[i].name=e.target.value; setProductsList(u) }} />
+                          
+                          <div>
+                            <label className="text-xs font-semibold text-gray-500 block mb-1">Sub-Kategori Hewan</label>
+                            <select
+                              value={details.animalType}
+                              onChange={(e) => {
+                                const u = [...productsList];
+                                const type = e.target.value as any;
+                                u[i].livestockDetails = {
+                                  animalType: type,
+                                  priceUnit: (type === 'Ayam' || type === 'Bebek') ? 'Per Ekor' : undefined,
+                                  weight: undefined,
+                                  age: '',
+                                  gender: ''
+                                };
+                                setProductsList(u);
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 font-semibold text-gray-700"
+                            >
+                              <option value="Ayam">🐔 Ayam</option>
+                              <option value="Bebek">🦆 Bebek</option>
+                              <option value="Sapi">🐄 Sapi</option>
+                              <option value="Kuda">🐎 Kuda</option>
+                              <option value="Kambing">🐐 Kambing</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                        <Input 
+                          id={`ternak-price-${i}`} 
+                          placeholder={isPoultry ? "Harga" : "Harga Paten (Contoh: 15.000.000)"} 
+                          type="text" 
+                          inputMode="numeric" 
+                          value={p.price}
+                          label={isPoultry ? "Harga" : "Harga Paten"}
+                          onChange={(e) => { const u=[...productsList]; u[i].price=formatInputCurrency(e.target.value); setProductsList(u) }} 
+                        />
+
+                        {isPoultry ? (
+                          <div>
+                            <label className="text-xs font-semibold text-gray-500 block mb-1">Satuan Harga</label>
+                            <select
+                              value={details.priceUnit}
+                              onChange={(e) => {
+                                const u = [...productsList];
+                                u[i].livestockDetails!.priceUnit = e.target.value as any;
+                                setProductsList(u);
+                              }}
+                              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 font-semibold text-gray-700"
+                            >
+                              <option value="Per Ekor">Per Ekor</option>
+                              <option value="Per Kilo">Per Kilo</option>
+                            </select>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input 
+                              id={`ternak-weight-${i}`} 
+                              placeholder="Bobot (kg)" 
+                              type="number" 
+                              value={details.weight || ''}
+                              label="Estimasi Bobot (kg)"
+                              onChange={(e) => {
+                                const u = [...productsList];
+                                u[i].livestockDetails!.weight = parseFloat(e.target.value) || undefined;
+                                setProductsList(u);
+                              }} 
+                            />
+                            <Input 
+                              id={`ternak-age-${i}`} 
+                              placeholder="E.g. 2 Tahun" 
+                              type="text" 
+                              value={details.age || ''}
+                              label="Umur"
+                              onChange={(e) => {
+                                const u = [...productsList];
+                                u[i].livestockDetails!.age = e.target.value;
+                                setProductsList(u);
+                              }} 
+                            />
+                            <div>
+                              <label className="text-xs font-semibold text-gray-500 block mb-1">Kelamin</label>
+                              <select
+                                value={details.gender || ''}
+                                onChange={(e) => {
+                                  const u = [...productsList];
+                                  u[i].livestockDetails!.gender = e.target.value;
+                                  setProductsList(u);
+                                }}
+                                className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 font-semibold text-gray-700 h-[42px]"
+                              >
+                                <option value="">Pilih</option>
+                                <option value="Jantan">Jantan</option>
+                                <option value="Betina">Betina</option>
+                              </select>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-3">
+                        <Input id={`ternak-desc-${i}`} placeholder="Deskripsi tambahan (opsional)" value={p.description}
+                          onChange={(e) => { const u=[...productsList]; u[i].description=e.target.value; setProductsList(u) }} />
+                      </div>
+                      {productsList.length > 1 && (
+                        <button onClick={() => setProductsList(productsList.filter((_, idx) => idx !== i))}
+                          className="absolute top-2 right-2 p-1 text-red-400 hover:text-red-600"><X size={14} /></button>
+                      )}
+                    </div>
+                  )
+                })}
+                <button onClick={() => setProductsList([...productsList, { name: '', price: '', description: '', image: null, imagePreview: '', livestockDetails: { animalType: 'Ayam', priceUnit: 'Per Ekor', weight: undefined, age: '', gender: '' } }])}
+                  className="flex items-center gap-2 text-sm text-purple-600 font-semibold hover:text-purple-800 transition-colors mt-2"
+                >
+                  <Plus size={16} /> Tambah Hewan Ternak Baru
                 </button>
               </div>
             )}

@@ -50,6 +50,20 @@ export interface Product {
   price: number
   description?: string
   image_url?: string
+  livestock_details?: {
+    animalType: 'Ayam' | 'Bebek' | 'Sapi' | 'Kuda' | 'Kambing'
+    priceUnit?: 'Per Kilo' | 'Per Ekor'
+    weight?: number
+    age?: string
+    gender?: string
+  }
+  livestockDetails?: {
+    animalType: 'Ayam' | 'Bebek' | 'Sapi' | 'Kuda' | 'Kambing'
+    priceUnit?: 'Per Kilo' | 'Per Ekor'
+    weight?: number
+    age?: string
+    gender?: string
+  }
 }
 
 export interface Service {
